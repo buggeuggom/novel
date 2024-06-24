@@ -1,0 +1,14 @@
+services:
+  novel-database:
+    container_name: novel-database
+    build:
+      dockerfile: Dockerfile
+      context: ./database
+    image: hwnaginkyu42/novel-database
+    environment:
+      - MARIADB_DATABASE=novel
+      - MARIADB_ROOT_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+    volumes:
+      - ./database/config:/etc/mysql/conf.d
+    ports:
+      - "3306:3306"
