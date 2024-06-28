@@ -1,0 +1,118 @@
+package com.novel.api.service;
+
+import com.novel.api.domain.user.User;
+import com.novel.api.dto.UserDto;
+import com.novel.api.dto.request.UserLoginRequest;
+import com.novel.api.dto.request.UserSignupRequest;
+import com.novel.api.fixture.UserFixture;
+import com.novel.api.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+@DisplayName("UserServiceTest")
+class UserServiceTest {
+
+    @Autowired
+    UserService userService;
+    @Autowired
+    UserRepository userRepository;
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    @BeforeEach
+    void setup() {
+        userRepository.deleteAll();
+    }
+
+    @Test
+    @DisplayName("[signup][success]")
+    void signup_success() {
+        //given
+        User user = UserFixture.get();
+
+        UserSignupRequest request = UserSignupRequest.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .build();
+        //when
+        UserDto signup = userService.signup(request);
+
+        //then
+        assertEquals(user.getName(), signup.getName());
+        assertEquals(user.getEmail(), signup.getEmail());
+        assertTrue(passwordEncoder.matches(user.getPassword(), signup.getPassword()));
+    }
+
+    @Test
+    @DisplayName("[signup][fail]")
+    void signup_fail_by_existed_email() {
+        //given
+        User user = UserFixture.get();
+        userRepository.save(user);
+
+        UserSignupRequest request = UserSignupRequest.builder()
+                .name(user.getName())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .build();
+        //expected
+        assertThrows(RuntimeException.class, () -> userService.signup(request));
+    }
+
+
+    @Test
+    @DisplayName("[login][success]")
+    void login_success() {
+        //given
+        User user = UserFixture.get();
+        userRepository.save(UserFixture.get(passwordEncoder));
+
+        var request = UserLoginRequest.builder()
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .build();
+        //expected
+        assertDoesNotThrow(() -> userService.login(request));
+    }
+
+
+    @Test
+    @DisplayName("[login][fail]: 없는 이메일")
+    void login_fail_wrong_email() {
+        //given
+        User user = UserFixture.get();
+
+        var request = UserLoginRequest.builder()
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .build();
+        //expected
+        assertThrows(RuntimeException.class, () -> userService.login(request));
+    }
+
+    @Test
+    @DisplayName("[login][fail]: 다른 비밀번호")
+    void login_fail_wrong_password() {
+        //given
+        User user = UserFixture.get();
+        userRepository.save(user);
+
+        var request = UserLoginRequest.builder()
+                .email(user.getEmail())
+                .password(user.getPassword()+"wrong")
+                .build();
+        //expected
+        assertThrows(RuntimeException.class, () -> userService.login(request));
+    }
+}
