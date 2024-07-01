@@ -59,7 +59,7 @@ class UserControllerTest {
 
     @Test
     @WithAnonymousUser
-    @DisplayName("[signup][fail]: 중복된 이메일")
+    @DisplayName("[signup][fail]: 중복된 user name")
     void signup_fail() throws Exception {
         //given
         UserSignupRequest request = UserSignupRequest.builder()

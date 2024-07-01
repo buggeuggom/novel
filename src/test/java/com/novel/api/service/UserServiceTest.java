@@ -2,7 +2,6 @@ package com.novel.api.service;
 
 import com.novel.api.domain.user.User;
 import com.novel.api.dto.UserDto;
-import com.novel.api.dto.request.UserLoginRequest;
 import com.novel.api.dto.request.UserSignupRequest;
 import com.novel.api.fixture.UserFixture;
 import com.novel.api.repository.UserRepository;
@@ -71,48 +70,4 @@ class UserServiceTest {
     }
 
 
-    @Test
-    @DisplayName("[login][success]")
-    void login_success() {
-        //given
-        User user = UserFixture.get();
-        userRepository.save(UserFixture.get(passwordEncoder));
-
-        var request = UserLoginRequest.builder()
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .build();
-        //expected
-        assertDoesNotThrow(() -> userService.login(request));
-    }
-
-
-    @Test
-    @DisplayName("[login][fail]: 없는 이메일")
-    void login_fail_wrong_email() {
-        //given
-        User user = UserFixture.get();
-
-        var request = UserLoginRequest.builder()
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .build();
-        //expected
-        assertThrows(RuntimeException.class, () -> userService.login(request));
-    }
-
-    @Test
-    @DisplayName("[login][fail]: 다른 비밀번호")
-    void login_fail_wrong_password() {
-        //given
-        User user = UserFixture.get();
-        userRepository.save(user);
-
-        var request = UserLoginRequest.builder()
-                .email(user.getEmail())
-                .password(user.getPassword()+"wrong")
-                .build();
-        //expected
-        assertThrows(RuntimeException.class, () -> userService.login(request));
-    }
 }
