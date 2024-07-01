@@ -21,8 +21,8 @@ public class User  extends AuditingFields {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
-    private String name;
     @Column(unique = true)
+    private String name;
     private String email;
     private String password;
     @Enumerated(STRING)
