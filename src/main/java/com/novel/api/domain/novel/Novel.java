@@ -1,13 +1,17 @@
 package com.novel.api.domain.novel;
 
 import com.novel.api.domain.AuditingFields;
-import com.novel.api.domain.genre.Genre;
+import com.novel.api.domain.episode.Episode;
 import com.novel.api.domain.user.User;
+import com.novel.api.dto.request.novel.PostNovelRequest;
+import com.novel.api.dto.request.novel.PutNovelRequest;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.FetchType.LAZY;
@@ -29,20 +33,29 @@ public class Novel extends AuditingFields {
     private String explanation;
     @Enumerated(STRING)
     private NovelStatus novelStatus;
+    @Enumerated(STRING)
+    private Genre genre;
 
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = LAZY, optional = false)
     private User user;
-    @JoinColumn(name = "genre_id")
-    @ManyToOne(fetch = LAZY, optional = false)
-    private Genre genre;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "novel")
+    private List<Episode> episodes;
 
     @Builder
-    private Novel(String title, String explanation, NovelStatus novelStatus, User user, Genre genre) {
+    private Novel(Long id, String title, String explanation, NovelStatus novelStatus, Genre genre, User user) {
+        this.id = id;
         this.title = title;
         this.explanation = explanation;
         this.novelStatus = novelStatus;
-        this.user = user;
         this.genre = genre;
+        this.user = user;
+    }
+
+    public void edit(PutNovelRequest request){
+        explanation = request.getExplanation();
+        novelStatus = request.getNovelStatus();
+        genre = request.getGenre();
     }
 }
