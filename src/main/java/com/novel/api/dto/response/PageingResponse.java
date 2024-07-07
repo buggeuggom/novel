@@ -18,7 +18,8 @@ public class PageingResponse<T> {
         this.page = page.getNumber() + 1;
         this.size = page.getSize();
         this.totalCount = page.getTotalElements();
-        this.items = page.getContent().stream().map(cont -> {
+        this.items = page.getContent().stream()
+                .map(cont -> {
                     try {
                         return clazz.getConstructor(cont.getClass()).newInstance(cont);
                     } catch (Exception e) {

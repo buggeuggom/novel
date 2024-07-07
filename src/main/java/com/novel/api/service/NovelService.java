@@ -52,6 +52,12 @@ public class NovelService {
         return NovelDto.from(novel);
     }
 
+    @Transactional(readOnly = true)
+    public PageingResponse<GetNovelListResponse> getList(GetNovelListSearch search) {
+        Page<Novel> novelPage = novelRepository.getList(search);
+        return new PageingResponse<>(novelPage, GetNovelListResponse.class);
+    }
+
     public void edit(Long novelId, PutNovelRequest request, String name) {
 
         Novel novel = novelRepository.findById(novelId).orElseThrow(RuntimeException::new);
@@ -76,9 +82,5 @@ public class NovelService {
         novelRepository.delete(novel);
     }
 
-    @Transactional(readOnly = true)
-    public PageingResponse<GetNovelListResponse> getList(GetNovelListSearch search) {
-        Page<Novel> novelPage = novelRepository.getList(search);
-        return new PageingResponse<>(novelPage, GetNovelListResponse.class);
-    }
+
 }

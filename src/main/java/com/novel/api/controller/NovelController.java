@@ -1,7 +1,6 @@
 package com.novel.api.controller;
 
 
-import com.novel.api.domain.user.User;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
 import com.novel.api.dto.request.novel.PostNovelRequest;
 import com.novel.api.dto.request.novel.PutNovelRequest;
@@ -9,7 +8,6 @@ import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.dto.response.novel.GetNovelListResponse;
 import com.novel.api.dto.response.novel.GetNovelResponse;
 import com.novel.api.service.NovelService;
-import com.novel.api.utils.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;

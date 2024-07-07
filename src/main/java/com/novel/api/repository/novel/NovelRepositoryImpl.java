@@ -1,8 +1,9 @@
 package com.novel.api.repository.novel;
 
+import com.novel.api.domain.novel.Genre;
 import com.novel.api.domain.novel.Novel;
-import com.novel.api.domain.novel.QNovel;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ public class NovelRepositoryImpl implements NovelRepositoryCustom{
                 .fetchFirst();
 
         List<Novel> novels = jpaQueryFactory.selectFrom(novel)
-                .where(novel.title.eq(search.getTitle()), novel.user.name.eq(search.getAuthor()), novel.genre.eq(search.getGenre()))
+                .where(titleStartWith(search.getTitle()), novelAuthorStartWith(search.getAuthor()), isNovelGenre(search.getGenre()))
                 .limit(search.getSize())
                 .offset(search.getOffset())
                 .orderBy(novel.id.desc())
@@ -34,4 +35,24 @@ public class NovelRepositoryImpl implements NovelRepositoryCustom{
 
         return new PageImpl<>(novels, search.getPageable(), totalCount);
     }
+
+    private static BooleanExpression novelAuthorStartWith(String author) {
+        if (author == null) return null;
+
+        return novel.user.name.startsWith(author);
+    }
+
+
+    private static BooleanExpression titleStartWith(String title) {
+        if (title == null) return null;
+
+        return novel.title.startsWith(title);
+    }
+
+    private static BooleanExpression isNovelGenre(Genre genre) {
+        if (genre == null) return null;
+
+        return novel.genre.eq(genre);
+    }
+
 }

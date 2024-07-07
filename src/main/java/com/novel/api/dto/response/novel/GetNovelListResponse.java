@@ -1,13 +1,11 @@
 package com.novel.api.dto.response.novel;
 
 import com.novel.api.domain.novel.Genre;
+import com.novel.api.domain.novel.Novel;
 import com.novel.api.domain.novel.NovelStatus;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
-@NoArgsConstructor
 public class GetNovelListResponse {
 
     private String title;
@@ -16,12 +14,14 @@ public class GetNovelListResponse {
     private Genre genre;
     private String author;
 
-    @Builder
-    private GetNovelListResponse(String title, String explanation, NovelStatus novelStatus, Genre genre, String author) {
-        this.title = title;
-        this.explanation = explanation;
-        this.novelStatus = novelStatus;
-        this.genre = genre;
-        this.author = author;
+    /*
+    페이징에서 사용
+     */
+    public GetNovelListResponse(Novel entity) {
+        this.title = entity.getTitle();
+        this.explanation = entity.getExplanation();
+        this.novelStatus = entity.getNovelStatus();
+        this.genre = entity.getGenre();
+        this.author = entity.getUser().getName();
     }
 }
