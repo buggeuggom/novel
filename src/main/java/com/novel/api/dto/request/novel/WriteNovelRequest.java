@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class PostNovelRequest {
+public class WriteNovelRequest {
 
 
     private String title;
@@ -15,7 +15,7 @@ public class PostNovelRequest {
     private Genre genre;
 
     @Builder
-    public PostNovelRequest(String title, String explanation, Genre genre) {
+    public WriteNovelRequest(String title, String explanation, Genre genre) {
         this.title = title;
         this.explanation = explanation;
         this.genre = genre;

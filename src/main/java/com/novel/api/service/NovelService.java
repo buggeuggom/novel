@@ -4,8 +4,8 @@ import com.novel.api.domain.novel.Novel;
 import com.novel.api.domain.user.User;
 import com.novel.api.dto.NovelDto;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
-import com.novel.api.dto.request.novel.PostNovelRequest;
-import com.novel.api.dto.request.novel.PutNovelRequest;
+import com.novel.api.dto.request.novel.WriteNovelRequest;
+import com.novel.api.dto.request.novel.EditNovelRequest;
 import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.dto.response.novel.GetNovelListResponse;
 import com.novel.api.repository.UserRepository;
@@ -25,7 +25,7 @@ public class NovelService {
     private final NovelRepository novelRepository;
     private final UserRepository userRepository;
 
-    public void write(PostNovelRequest request, String name) {
+    public void write(WriteNovelRequest request, String name) {
 
         User user = userRepository.findByName(name).orElseThrow(RuntimeException::new);
 
@@ -58,7 +58,7 @@ public class NovelService {
         return new PageingResponse<>(novelPage, GetNovelListResponse.class);
     }
 
-    public void edit(Long novelId, PutNovelRequest request, String name) {
+    public void edit(Long novelId, EditNovelRequest request, String name) {
 
         Novel novel = novelRepository.findById(novelId).orElseThrow(RuntimeException::new);
 

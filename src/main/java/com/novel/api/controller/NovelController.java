@@ -2,8 +2,8 @@ package com.novel.api.controller;
 
 
 import com.novel.api.dto.request.novel.GetNovelListSearch;
-import com.novel.api.dto.request.novel.PostNovelRequest;
-import com.novel.api.dto.request.novel.PutNovelRequest;
+import com.novel.api.dto.request.novel.WriteNovelRequest;
+import com.novel.api.dto.request.novel.EditNovelRequest;
 import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.dto.response.novel.GetNovelListResponse;
 import com.novel.api.dto.response.novel.GetNovelResponse;
@@ -34,7 +34,8 @@ public class NovelController {
      * 요청 본문: PostNovelRequest
      */
     @PostMapping
-    public void write(@RequestBody PostNovelRequest request, Authentication authentication) {
+    public void write(@RequestBody WriteNovelRequest request, Authentication authentication) {
+
         String name = authentication.getName();
 
         novelService.write(request, name);
@@ -46,7 +47,7 @@ public class NovelController {
      * 요청 본문: PostNovelRequest
      */
     @PutMapping("/{novelId}")
-    public void edit(@PathVariable Long novelId, @RequestBody PutNovelRequest request, Authentication authentication){
+    public void edit(@PathVariable Long novelId, @RequestBody EditNovelRequest request, Authentication authentication){
         String name = authentication.getName();
 
         novelService.edit(novelId, request, name);

@@ -32,7 +32,8 @@ public class Episode extends AuditingFields {
     private Novel novel;
 
     @Builder
-    private Episode(String title, String detail, Novel novel) {
+    private Episode(Long id, String title, String detail, Novel novel) {
+        this.id = id;
         this.title = title;
         this.detail = detail;
         this.novel = novel;

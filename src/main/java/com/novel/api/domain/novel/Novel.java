@@ -3,8 +3,7 @@ package com.novel.api.domain.novel;
 import com.novel.api.domain.AuditingFields;
 import com.novel.api.domain.episode.Episode;
 import com.novel.api.domain.user.User;
-import com.novel.api.dto.request.novel.PostNovelRequest;
-import com.novel.api.dto.request.novel.PutNovelRequest;
+import com.novel.api.dto.request.novel.EditNovelRequest;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,7 +52,7 @@ public class Novel extends AuditingFields {
         this.user = user;
     }
 
-    public void edit(PutNovelRequest request){
+    public void edit(EditNovelRequest request){
         explanation = request.getExplanation();
         novelStatus = request.getNovelStatus();
         genre = request.getGenre();
