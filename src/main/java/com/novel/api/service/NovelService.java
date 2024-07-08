@@ -8,6 +8,7 @@ import com.novel.api.dto.request.novel.WriteNovelRequest;
 import com.novel.api.dto.request.novel.EditNovelRequest;
 import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.dto.response.novel.GetNovelListResponse;
+import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.repository.UserRepository;
 import com.novel.api.repository.novel.NovelRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.novel.api.domain.novel.NovelStatus.*;
+import static com.novel.api.exception.ErrorCode.*;
 
 @Service
 @Transactional
@@ -23,14 +25,11 @@ import static com.novel.api.domain.novel.NovelStatus.*;
 public class NovelService {
 
     private final NovelRepository novelRepository;
-    private final UserRepository userRepository;
 
-    public void write(WriteNovelRequest request, String name) {
-
-        User user = userRepository.findByName(name).orElseThrow(RuntimeException::new);
+    public void write(WriteNovelRequest request, User user) {
 
         novelRepository.findByTitle(request.getTitle()).ifPresent(it -> {
-            throw new RuntimeException();
+            throw new NovelApplicationException(DUPLICATED_NOVEL_NAME);
         });
 
         Novel novel = Novel.builder()
@@ -47,7 +46,7 @@ public class NovelService {
     @Transactional(readOnly = true)
     public NovelDto get(Long novelId) {
 
-        Novel novel = novelRepository.findById(novelId).orElseThrow(RuntimeException::new);
+        Novel novel = getNovelOrNovelNotFoundException(novelId);
 
         return NovelDto.from(novel);
     }
@@ -58,29 +57,40 @@ public class NovelService {
         return new PageingResponse<>(novelPage, GetNovelListResponse.class);
     }
 
-    public void edit(Long novelId, EditNovelRequest request, String name) {
+    public void edit(Long novelId, EditNovelRequest request, User user) {
 
-        Novel novel = novelRepository.findById(novelId).orElseThrow(RuntimeException::new);
+        Novel novel = getNovelOrNovelNotFoundException(novelId);
 
-        User user = userRepository.findByName(name).orElseThrow(RuntimeException::new);
-        if(!novel.getUser().equals(user)){
-            throw new RuntimeException();
-        }
-
+        isPermittedUserOrInvalidPermissionException(user, novel);
 
         novel.edit(request);
     }
 
-    public void delete(Long novelId, String name) {
-        Novel novel = novelRepository.findById(novelId).orElseThrow(RuntimeException::new);
+    public void delete(Long novelId, User user) {
 
-        User user = userRepository.findByName(name).orElseThrow(RuntimeException::new);
-        if(!novel.getUser().equals(user)){
-            throw new RuntimeException();
-        }
+        Novel novel = getNovelOrNovelNotFoundException(novelId);
+
+        isPermittedUserOrInvalidPermissionException(user, novel);
 
         novelRepository.delete(novel);
     }
+
+    /**
+     * 추출된 부분
+     */
+
+    private Novel getNovelOrNovelNotFoundException(Long novelId) {
+        return novelRepository.findById(novelId).orElseThrow(() ->
+                new NovelApplicationException(NOVEL_NOT_FOUND));
+    }
+
+    private static void isPermittedUserOrInvalidPermissionException(User user, Novel novel) {
+        if(!novel.getUser().equals(user)){
+            throw new NovelApplicationException(INVALID_PERMISSION);
+        }
+    }
+
+
 
 
 }
