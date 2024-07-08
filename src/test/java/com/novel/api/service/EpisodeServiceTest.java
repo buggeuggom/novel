@@ -6,6 +6,7 @@ import com.novel.api.domain.user.User;
 import com.novel.api.dto.EpisodeDto;
 import com.novel.api.dto.request.episode.EpisodeSearch;
 import com.novel.api.dto.request.episode.WriteEpisodeRequest;
+import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.EpisodeFixture;
 import com.novel.api.fixture.TestInfoFixture;
 import com.novel.api.repository.episode.EpisodeRepository;
@@ -24,9 +25,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.novel.api.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +38,6 @@ class EpisodeServiceTest {
 
     @Autowired
     EpisodeService episodeService;
-
 
     @MockBean
     EpisodeRepository episodeRepository;
@@ -81,8 +81,9 @@ class EpisodeServiceTest {
         when(novelRepository.save(any())).thenReturn(mock(Episode.class));
 
         //then
-        assertThrows(RuntimeException.class, () -> episodeService
+        var e = assertThrows(NovelApplicationException.class, () -> episodeService
                 .write(fixture.getNovelId(), mock(WriteEpisodeRequest.class), mockUser));
+        assertEquals(e.getErrorCode(), NOVEL_NOT_FOUND);
     }
 
     @Test
@@ -100,8 +101,9 @@ class EpisodeServiceTest {
         when(novelRepository.save(any())).thenReturn(mock(Episode.class));
 
         //then
-        assertThrows(RuntimeException.class, () -> episodeService
+        var e = assertThrows(NovelApplicationException.class, () -> episodeService
                 .write(fixture.getNovelId(), mock(WriteEpisodeRequest.class), mockUser));
+        assertEquals(e.getErrorCode(), INVALID_PERMISSION);
     }
 
     /**
@@ -135,7 +137,8 @@ class EpisodeServiceTest {
         when(episodeRepository.findById(fixture.getEpisodeId())).thenReturn(Optional.empty());
 
         //then
-        assertThrows(RuntimeException.class, () -> episodeService.get(fixture.getEpisodeId()));
+        var e = assertThrows(NovelApplicationException.class, () -> episodeService.get(fixture.getEpisodeId()));
+        assertEquals(e.getErrorCode(), EPISODE_NOT_FOUND);
     }
 
     /**
@@ -164,7 +167,6 @@ class EpisodeServiceTest {
 
         //then
         assertDoesNotThrow(()-> episodeService.getList(info.getEpisodeId(), search));
-
     }
 
 }

@@ -7,6 +7,7 @@ import com.novel.api.dto.NovelDto;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
 import com.novel.api.dto.request.novel.WriteNovelRequest;
 import com.novel.api.dto.request.novel.EditNovelRequest;
+import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.NovelFixture;
 import com.novel.api.fixture.TestInfoFixture;
 import com.novel.api.fixture.UserFixture;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.novel.api.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -50,26 +52,23 @@ class NovelServiceTest {
         //given
         var fixture = TestInfoFixture.get();
 
-        WriteNovelRequest request = WriteNovelRequest.builder()
+        var request = WriteNovelRequest.builder()
                 .title(fixture.getTitle())
                 .explanation(fixture.getExplanation())
                 .genre(fixture.getGenre())
                 .build();
 
         //when
-        when(userRepository.findByName(fixture.getUserName()))
-                .thenReturn(Optional.of(UserFixture.get(fixture.getUserName(), fixture.getPassword())));
-        when(novelRepository.findByTitle(fixture.getTitle()))
-                .thenReturn(Optional.empty());
+        when(novelRepository.findByTitle(fixture.getTitle())).thenReturn(Optional.empty());
         when(novelRepository.save(any())).thenReturn(mock(Novel.class));
 
         //then
-        assertDoesNotThrow(() -> novelService.write(request, fixture.getUserName()));
+        assertDoesNotThrow(() -> novelService.write(request, mock(User.class)));
     }
 
     @Test
-    @DisplayName("[write][fail]: USER_NOT_FOUND")
-    void write_fail_user_not_found() {
+    @DisplayName("[write][fail]: DUPLICATED_NOVEL_NAME")
+    void write_fail_duplicated_novel_name() {
         //given
         var fixture = TestInfoFixture.get();
 
@@ -80,37 +79,13 @@ class NovelServiceTest {
                 .build();
 
         //when
-        when(userRepository.findByName(fixture.getUserName()))
-                .thenReturn(Optional.empty());
-        when(novelRepository.findByTitle(fixture.getTitle()))
-                .thenReturn(Optional.empty());
-        when(novelRepository.save(any())).thenReturn(mock(Novel.class));
-
-        //then
-        var exception = assertThrows(RuntimeException.class, () -> novelService.write(request, fixture.getUserName()));
-    }
-
-    @Test
-    @DisplayName("[write][fail]: TITLE_ALREADY_EXIST")
-    void write_fail_title_already_exist() {
-        //given
-        var fixture = TestInfoFixture.get();
-
-        WriteNovelRequest request = WriteNovelRequest.builder()
-                .title(fixture.getTitle())
-                .explanation(fixture.getExplanation())
-                .genre(fixture.getGenre())
-                .build();
-
-        //when
-        when(userRepository.findByName(fixture.getUserName()))
-                .thenReturn(Optional.of(UserFixture.get(fixture.getUserName(), fixture.getPassword())));
         when(novelRepository.findByTitle(fixture.getTitle()))
                 .thenReturn(Optional.of(mock(Novel.class)));
         when(novelRepository.save(any())).thenReturn(mock(Novel.class));
 
         //then
-        var exception = assertThrows(RuntimeException.class, () -> novelService.write(request, fixture.getUserName()));
+        var exception = assertThrows(NovelApplicationException.class, () -> novelService.write(request, mock(User.class)));
+        assertEquals(exception.getErrorCode(), DUPLICATED_NOVEL_NAME);
     }
 
     /**
@@ -127,7 +102,7 @@ class NovelServiceTest {
                 .thenReturn(Optional.of(NovelFixture.get(mock(User.class))));
 
         //then
-        NovelDto novelDto = assertDoesNotThrow(() -> novelService.get(fixture.getNovelId()));
+        assertDoesNotThrow(() -> novelService.get(fixture.getNovelId()));
     }
 
     @Test
@@ -141,8 +116,10 @@ class NovelServiceTest {
                 .thenReturn(Optional.empty());
 
         //then
-        var exception = assertThrows(RuntimeException.class, () -> novelService.get(fixture.getNovelId()));
+        var exception = assertThrows(NovelApplicationException.class, () -> novelService.get(fixture.getNovelId()));
+        assertEquals(exception.getErrorCode(), NOVEL_NOT_FOUND);
     }
+
     /**
      * getList
      */
@@ -186,9 +163,10 @@ class NovelServiceTest {
     @DisplayName("[edit][성공]:")
     void edit_success() {
         //given
+        var fixture = TestInfoFixture.get();
+
         Novel mockNovel = mock(Novel.class);
         User mockUser = mock(User.class);
-        var fixture = TestInfoFixture.get();
 
         var request = EditNovelRequest.builder()
                 .explanation(fixture.getExplanation())
@@ -198,12 +176,10 @@ class NovelServiceTest {
         //when
         when(novelRepository.findById(fixture.getNovelId()))
                 .thenReturn(Optional.of(mockNovel));
-        when(userRepository.findByName(fixture.getUserName()))
-                .thenReturn(Optional.of(mockUser));
         when(mockNovel.getUser()).thenReturn(mockUser);
 
         //then
-        assertDoesNotThrow(() -> novelService.edit(fixture.getNovelId(), request, fixture.getUserName()));
+        assertDoesNotThrow(() -> novelService.edit(fixture.getNovelId(), request, mockUser));
     }
 
     @Test
@@ -217,6 +193,7 @@ class NovelServiceTest {
                 .genre(fixture.getGenre())
                 .build();
 
+        User mockUser = mock(User.class);
         //when
         when(novelRepository.findById(fixture.getNovelId()))
                 .thenReturn(Optional.empty());
@@ -225,30 +202,10 @@ class NovelServiceTest {
 
 
         //then
-        var exception = assertThrows(RuntimeException.class, () -> novelService.edit(fixture.getNovelId(), request, fixture.getUserName()));
-    }
+        var exception = assertThrows(NovelApplicationException.class,
+                () -> novelService.edit(fixture.getNovelId(), request, mockUser));
 
-    @Test
-    @DisplayName("[edit][fail]: USER_NOT_FOUND")
-    void edit_fail_user_not_found() {
-        //given
-        var fixture = TestInfoFixture.get();
-
-        var request = EditNovelRequest.builder()
-                .explanation(fixture.getExplanation())
-                .genre(fixture.getGenre())
-                .build();
-
-        //when
-        when(novelRepository.findById(fixture.getNovelId()))
-                .thenReturn(Optional.of(mock(Novel.class)));
-        when(userRepository.findByName(fixture.getUserName()))
-                .thenReturn(Optional.empty());
-
-
-        //then
-        var exception = assertThrows(RuntimeException.class,
-                () -> novelService.edit(fixture.getNovelId(), request, fixture.getUserName()));
+        assertEquals(exception.getErrorCode(), NOVEL_NOT_FOUND);
     }
 
     @Test
@@ -272,8 +229,10 @@ class NovelServiceTest {
         when(mockNovel.getUser()).thenReturn(mock(User.class));
 
         //then
-        var exception = assertThrows(RuntimeException.class,
-                () -> novelService.edit(fixture.getNovelId(), request, fixture.getUserName()));
+        var exception = assertThrows(NovelApplicationException.class,
+                () -> novelService.edit(fixture.getNovelId(), request, mockUser));
+
+        assertEquals(exception.getErrorCode(), INVALID_PERMISSION);
     }
 
     /**
@@ -297,7 +256,7 @@ class NovelServiceTest {
         when(mockNovel.getUser()).thenReturn(mockUser);
 
         //then
-        assertDoesNotThrow(() -> novelService.delete(fixture.getNovelId(), fixture.getUserName()));
+        assertDoesNotThrow(() -> novelService.delete(fixture.getNovelId(),  mockUser));
     }
 
     @Test
@@ -306,6 +265,7 @@ class NovelServiceTest {
         //given
         var fixture = TestInfoFixture.get();
 
+        User mockUser = mock(User.class);
         //when
         when(novelRepository.findById(fixture.getNovelId()))
                 .thenReturn(Optional.empty());
@@ -314,31 +274,9 @@ class NovelServiceTest {
 
 
         //then
-        var exception = assertThrows(RuntimeException.class,
-                () -> novelService.delete(fixture.getNovelId(), fixture.getUserName()));
-    }
-
-    @Test
-    @DisplayName("[delete][fail]: USER_NOT_FOUND")
-    void delete_fail_user_not_found() {
-        //given
-        var fixture = TestInfoFixture.get();
-
-        var request = EditNovelRequest.builder()
-                .explanation(fixture.getExplanation())
-                .genre(fixture.getGenre())
-                .build();
-
-        //when
-        when(novelRepository.findById(fixture.getNovelId()))
-                .thenReturn(Optional.of(mock(Novel.class)));
-        when(userRepository.findByName(fixture.getUserName()))
-                .thenReturn(Optional.empty());
-
-
-        //then
-        var exception = assertThrows(RuntimeException.class,
-                () -> novelService.delete(fixture.getNovelId(), fixture.getUserName()));
+        var exception = assertThrows(NovelApplicationException.class,
+                () -> novelService.delete(fixture.getNovelId(),  mockUser));
+        assertEquals(exception.getErrorCode(), NOVEL_NOT_FOUND);
     }
 
     @Test
@@ -362,7 +300,8 @@ class NovelServiceTest {
         when(mockNovel.getUser()).thenReturn(mock(User.class));
 
         //then
-        var exception = assertThrows(RuntimeException.class,
-                () -> novelService.delete(fixture.getNovelId(), fixture.getUserName()));
+        var exception = assertThrows(NovelApplicationException.class,
+                () -> novelService.delete(fixture.getNovelId(),  mockUser));
+        assertEquals(exception.getErrorCode(), INVALID_PERMISSION);
     }
 }
