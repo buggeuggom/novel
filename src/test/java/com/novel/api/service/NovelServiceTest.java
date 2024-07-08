@@ -5,9 +5,8 @@ import com.novel.api.domain.novel.Novel;
 import com.novel.api.domain.user.User;
 import com.novel.api.dto.NovelDto;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
-import com.novel.api.dto.request.novel.PostNovelRequest;
-import com.novel.api.dto.request.novel.PutNovelRequest;
-import com.novel.api.dto.response.novel.GetNovelResponse;
+import com.novel.api.dto.request.novel.WriteNovelRequest;
+import com.novel.api.dto.request.novel.EditNovelRequest;
 import com.novel.api.fixture.NovelFixture;
 import com.novel.api.fixture.TestInfoFixture;
 import com.novel.api.fixture.UserFixture;
@@ -51,7 +50,7 @@ class NovelServiceTest {
         //given
         var fixture = TestInfoFixture.get();
 
-        PostNovelRequest request = PostNovelRequest.builder()
+        WriteNovelRequest request = WriteNovelRequest.builder()
                 .title(fixture.getTitle())
                 .explanation(fixture.getExplanation())
                 .genre(fixture.getGenre())
@@ -74,7 +73,7 @@ class NovelServiceTest {
         //given
         var fixture = TestInfoFixture.get();
 
-        PostNovelRequest request = PostNovelRequest.builder()
+        WriteNovelRequest request = WriteNovelRequest.builder()
                 .title(fixture.getTitle())
                 .explanation(fixture.getExplanation())
                 .genre(fixture.getGenre())
@@ -97,7 +96,7 @@ class NovelServiceTest {
         //given
         var fixture = TestInfoFixture.get();
 
-        PostNovelRequest request = PostNovelRequest.builder()
+        WriteNovelRequest request = WriteNovelRequest.builder()
                 .title(fixture.getTitle())
                 .explanation(fixture.getExplanation())
                 .genre(fixture.getGenre())
@@ -166,8 +165,8 @@ class NovelServiceTest {
                         .explanation("test explanation: " + i)
                         .genre(Genre.FANTASY)
                         .user(mockUser)
-                        .build()
-                ).collect(Collectors.toList());
+                        .build())
+                .collect(Collectors.toList());
 
 
         PageImpl<Novel> novelPage = new PageImpl<>(novels, search.getPageable(), novels.size());
@@ -191,7 +190,7 @@ class NovelServiceTest {
         User mockUser = mock(User.class);
         var fixture = TestInfoFixture.get();
 
-        var request = PutNovelRequest.builder()
+        var request = EditNovelRequest.builder()
                 .explanation(fixture.getExplanation())
                 .genre(fixture.getGenre())
                 .build();
@@ -213,7 +212,7 @@ class NovelServiceTest {
         //given
         var fixture = TestInfoFixture.get();
 
-        var request = PutNovelRequest.builder()
+        var request = EditNovelRequest.builder()
                 .explanation(fixture.getExplanation())
                 .genre(fixture.getGenre())
                 .build();
@@ -235,7 +234,7 @@ class NovelServiceTest {
         //given
         var fixture = TestInfoFixture.get();
 
-        var request = PutNovelRequest.builder()
+        var request = EditNovelRequest.builder()
                 .explanation(fixture.getExplanation())
                 .genre(fixture.getGenre())
                 .build();
@@ -260,7 +259,7 @@ class NovelServiceTest {
         User mockUser = mock(User.class);
         var fixture = TestInfoFixture.get();
 
-        var request = PutNovelRequest.builder()
+        var request = EditNovelRequest.builder()
                 .explanation(fixture.getExplanation())
                 .genre(fixture.getGenre())
                 .build();
@@ -325,7 +324,7 @@ class NovelServiceTest {
         //given
         var fixture = TestInfoFixture.get();
 
-        var request = PutNovelRequest.builder()
+        var request = EditNovelRequest.builder()
                 .explanation(fixture.getExplanation())
                 .genre(fixture.getGenre())
                 .build();
@@ -350,7 +349,7 @@ class NovelServiceTest {
         User mockUser = mock(User.class);
         var fixture = TestInfoFixture.get();
 
-        var request = PutNovelRequest.builder()
+        var request = EditNovelRequest.builder()
                 .explanation(fixture.getExplanation())
                 .genre(fixture.getGenre())
                 .build();

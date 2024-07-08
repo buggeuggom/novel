@@ -17,4 +17,15 @@ public class NovelFixture {
                 .user(user)
                 .build();
     }
+
+    public static Novel get(){
+        return Novel.builder()
+                .id(1L)
+                .title("test title")
+                .explanation("test explanation")
+                .genre(Genre.FANTASY)
+                .novelStatus(NovelStatus.PROGRESS)
+                .user(UserFixture.get())
+                .build();
+    }
 }

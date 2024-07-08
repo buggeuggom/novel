@@ -8,14 +8,14 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class PutNovelRequest {
+public class EditNovelRequest {
 
     private String explanation;
     private NovelStatus novelStatus;
     private Genre genre;
 
     @Builder
-    public PutNovelRequest(String explanation, NovelStatus novelStatus, Genre genre) {
+    public EditNovelRequest(String explanation, NovelStatus novelStatus, Genre genre) {
         this.explanation = explanation;
         this.novelStatus = novelStatus;
         this.genre = genre;

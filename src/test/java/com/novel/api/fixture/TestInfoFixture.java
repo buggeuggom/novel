@@ -17,6 +17,10 @@ public class TestInfoFixture {
         info.setTitle("test title");
         info.setExplanation("test explanation");
         info.setGenre(Genre.FANTASY);
+
+        info.setEpisodeId(201L);
+        info.setEpisodeTitle("test episode title");
+        info.setEpisodeDetail("test episode detail");
         return info;
     }
 
@@ -30,5 +34,9 @@ public class TestInfoFixture {
         private String title;
         private String explanation;
         private Genre genre;
+
+        private Long episodeId;
+        private String episodeTitle;
+        private String episodeDetail;
     }
 }
