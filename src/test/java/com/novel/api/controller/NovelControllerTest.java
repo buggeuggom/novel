@@ -2,8 +2,8 @@ package com.novel.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.novel.api.dto.NovelDto;
-import com.novel.api.dto.request.novel.PostNovelRequest;
-import com.novel.api.dto.request.novel.PutNovelRequest;
+import com.novel.api.dto.request.novel.WriteNovelRequest;
+import com.novel.api.dto.request.novel.EditNovelRequest;
 import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.fixture.NovelFixture;
 import com.novel.api.fixture.TestInfoFixture;
@@ -101,7 +101,7 @@ class NovelControllerTest {
     @DisplayName("[write][success]: ")
     void write_success() throws Exception {
         //given
-        PostNovelRequest request = PostNovelRequest.builder()
+        WriteNovelRequest request = WriteNovelRequest.builder()
                 .title("title")
                 .explanation("explanation")
                 .genre(FANTASY)
@@ -121,7 +121,7 @@ class NovelControllerTest {
     @DisplayName("[write][fail]: forbidden <- 로그인 안된 유저")
     void write_fail_forbidden() throws Exception {
         //given
-        var request = PostNovelRequest.builder()
+        var request = WriteNovelRequest.builder()
                 .title("title")
                 .explanation("explanation")
                 .genre(FANTASY)
@@ -143,7 +143,7 @@ class NovelControllerTest {
         //given
         var info = TestInfoFixture.get();
 
-        var request = PutNovelRequest.builder()
+        var request = EditNovelRequest.builder()
                 .novelStatus(COMPLETED)
                 .explanation("explanation")
                 .genre(FANTASY)
