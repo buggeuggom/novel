@@ -3,7 +3,6 @@ package com.novel.api.service;
 import com.novel.api.domain.novel.Genre;
 import com.novel.api.domain.novel.Novel;
 import com.novel.api.domain.user.User;
-import com.novel.api.dto.NovelDto;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
 import com.novel.api.dto.request.novel.WriteNovelRequest;
 import com.novel.api.dto.request.novel.EditNovelRequest;
@@ -152,7 +151,7 @@ class NovelServiceTest {
         when(novelRepository.getList(search)).thenReturn(novelPage);
 
         //then
-        assertDoesNotThrow(()-> novelService.getList(search));
+        assertDoesNotThrow(() -> novelService.getList(search));
     }
 
     /**
@@ -256,7 +255,7 @@ class NovelServiceTest {
         when(mockNovel.getUser()).thenReturn(mockUser);
 
         //then
-        assertDoesNotThrow(() -> novelService.delete(fixture.getNovelId(),  mockUser));
+        assertDoesNotThrow(() -> novelService.delete(fixture.getNovelId(), mockUser));
     }
 
     @Test
@@ -275,7 +274,7 @@ class NovelServiceTest {
 
         //then
         var exception = assertThrows(NovelApplicationException.class,
-                () -> novelService.delete(fixture.getNovelId(),  mockUser));
+                () -> novelService.delete(fixture.getNovelId(), mockUser));
         assertEquals(exception.getErrorCode(), NOVEL_NOT_FOUND);
     }
 
@@ -301,7 +300,7 @@ class NovelServiceTest {
 
         //then
         var exception = assertThrows(NovelApplicationException.class,
-                () -> novelService.delete(fixture.getNovelId(),  mockUser));
+                () -> novelService.delete(fixture.getNovelId(), mockUser));
         assertEquals(exception.getErrorCode(), INVALID_PERMISSION);
     }
 }

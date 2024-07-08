@@ -26,7 +26,7 @@ public class NovelController {
      * URL 파라미터: id
      */
     @GetMapping("/{novelId}")
-    public GetNovelResponse get(@PathVariable Long novelId){
+    public GetNovelResponse get(@PathVariable Long novelId) {
 
         return GetNovelResponse.from(novelService.get(novelId));
     }
@@ -49,7 +49,7 @@ public class NovelController {
      * 요청 본문: PostNovelRequest
      */
     @PutMapping("/{novelId}")
-    public void edit(@PathVariable Long novelId, @RequestBody EditNovelRequest request, Authentication authentication){
+    public void edit(@PathVariable Long novelId, @RequestBody EditNovelRequest request, Authentication authentication) {
         User user = ClassUtils.getSafeCastInstance(authentication.getPrincipal(), User.class);
 
         novelService.edit(novelId, request, user);
@@ -71,7 +71,7 @@ public class NovelController {
      * URL 파라미터: GetNovelListSearch
      */
     @GetMapping
-    public PageingResponse<GetNovelListResponse> getList(@ModelAttribute GetNovelListSearch getNovelListSearch){
+    public PageingResponse<GetNovelListResponse> getList(@ModelAttribute GetNovelListSearch getNovelListSearch) {
         return novelService.getList(getNovelListSearch);
     }
 

@@ -35,7 +35,7 @@ public class EpisodeController {
     @GetMapping("/novels/{novelId}/episodes")
     public PageingResponse<EpisodeListResponse> getList(@PathVariable Long novelId, @ModelAttribute EpisodeSearch search) {
 
-     return episodeService.getList(novelId, search);
+        return episodeService.getList(novelId, search);
     }
 
 }

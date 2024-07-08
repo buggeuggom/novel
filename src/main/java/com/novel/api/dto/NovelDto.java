@@ -36,7 +36,7 @@ public class NovelDto {
         this.userDto = userDto;
     }
 
-    public static NovelDto from(Novel entity){
+    public static NovelDto from(Novel entity) {
         return NovelDto.builder()
                 .id(entity.getId())
                 .title(entity.getTitle())

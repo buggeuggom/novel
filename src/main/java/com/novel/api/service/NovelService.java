@@ -9,7 +9,6 @@ import com.novel.api.dto.request.novel.EditNovelRequest;
 import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.dto.response.novel.GetNovelListResponse;
 import com.novel.api.exception.NovelApplicationException;
-import com.novel.api.repository.UserRepository;
 import com.novel.api.repository.novel.NovelRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -85,12 +84,10 @@ public class NovelService {
     }
 
     private static void isPermittedUserOrInvalidPermissionException(User user, Novel novel) {
-        if(!novel.getUser().equals(user)){
+        if (!novel.getUser().equals(user)) {
             throw new NovelApplicationException(INVALID_PERMISSION);
         }
     }
-
-
 
 
 }

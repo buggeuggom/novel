@@ -1,7 +1,6 @@
 package com.novel.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.novel.api.domain.user.User;
 import com.novel.api.dto.EpisodeDto;
 import com.novel.api.dto.request.episode.WriteEpisodeRequest;
 import com.novel.api.dto.response.PageingResponse;

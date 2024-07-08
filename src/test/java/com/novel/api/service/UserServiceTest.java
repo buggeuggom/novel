@@ -3,7 +3,6 @@ package com.novel.api.service;
 import com.novel.api.domain.user.User;
 import com.novel.api.dto.UserDto;
 import com.novel.api.dto.request.UserSignupRequest;
-import com.novel.api.exception.ErrorCode;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.UserFixture;
 import com.novel.api.repository.UserRepository;
@@ -17,7 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static com.novel.api.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 @AutoConfigureMockMvc
