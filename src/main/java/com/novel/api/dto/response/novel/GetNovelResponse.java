@@ -23,7 +23,7 @@ public class GetNovelResponse {
         this.authorName = authorName;
     }
 
-    public static GetNovelResponse from(NovelDto dto){
+    public static GetNovelResponse from(NovelDto dto) {
         return new GetNovelResponse(
                 dto.getTitle(),
                 dto.getExplanation(),

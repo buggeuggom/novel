@@ -2,11 +2,11 @@ package com.novel.api.fixture;
 
 import com.novel.api.domain.user.User;
 import com.novel.api.domain.user.UserRole;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 public class UserFixture {
 
-    public static User get(String name, String password){
+    public static User get(String name, String password) {
         return User.builder()
                 .name(name)
                 .email("test@email.com")
@@ -15,7 +15,7 @@ public class UserFixture {
                 .build();
     }
 
-    public static User get(){
+    public static User get() {
         return User.builder()
                 .name("testName")
                 .email("test@email.com")
@@ -23,7 +23,8 @@ public class UserFixture {
                 .userRole(UserRole.READER)
                 .build();
     }
-    public static User get(PasswordEncoder passwordEncoder){
+
+    public static User get(PasswordEncoder passwordEncoder) {
         return User.builder()
                 .name("testName")
                 .email("test@email.com")

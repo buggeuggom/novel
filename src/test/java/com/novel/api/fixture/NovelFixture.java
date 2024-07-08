@@ -7,7 +7,7 @@ import com.novel.api.domain.user.User;
 
 public class NovelFixture {
 
-    public static Novel get(User user){
+    public static Novel get(User user) {
         return Novel.builder()
                 .id(1L)
                 .title("test title")
@@ -18,7 +18,7 @@ public class NovelFixture {
                 .build();
     }
 
-    public static Novel get(){
+    public static Novel get() {
         return Novel.builder()
                 .id(1L)
                 .title("test title")

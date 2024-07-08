@@ -3,6 +3,7 @@ package com.novel.api.service;
 import com.novel.api.domain.user.User;
 import com.novel.api.dto.UserDto;
 import com.novel.api.dto.request.UserSignupRequest;
+import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.UserFixture;
 import com.novel.api.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +14,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import static com.novel.api.exception.ErrorCode.*;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -66,7 +67,8 @@ class UserServiceTest {
                 .password(user.getPassword())
                 .build();
         //expected
-        assertThrows(RuntimeException.class, () -> userService.signup(request));
+        var e = assertThrows(NovelApplicationException.class, () -> userService.signup(request));
+        assertEquals(e.getErrorCode(), DUPLICATED_USER_NAME);
     }
 
 

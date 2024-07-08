@@ -1,6 +1,7 @@
 package com.novel.api.controller;
 
 
+import com.novel.api.domain.user.User;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
 import com.novel.api.dto.request.novel.WriteNovelRequest;
 import com.novel.api.dto.request.novel.EditNovelRequest;
@@ -8,6 +9,7 @@ import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.dto.response.novel.GetNovelListResponse;
 import com.novel.api.dto.response.novel.GetNovelResponse;
 import com.novel.api.service.NovelService;
+import com.novel.api.utils.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +26,7 @@ public class NovelController {
      * URL 파라미터: id
      */
     @GetMapping("/{novelId}")
-    public GetNovelResponse get(@PathVariable Long novelId){
+    public GetNovelResponse get(@PathVariable Long novelId) {
 
         return GetNovelResponse.from(novelService.get(novelId));
     }
@@ -36,9 +38,9 @@ public class NovelController {
     @PostMapping
     public void write(@RequestBody WriteNovelRequest request, Authentication authentication) {
 
-        String name = authentication.getName();
+        User user = ClassUtils.getSafeCastInstance(authentication.getPrincipal(), User.class);
 
-        novelService.write(request, name);
+        novelService.write(request, user);
     }
 
     /**
@@ -47,10 +49,10 @@ public class NovelController {
      * 요청 본문: PostNovelRequest
      */
     @PutMapping("/{novelId}")
-    public void edit(@PathVariable Long novelId, @RequestBody EditNovelRequest request, Authentication authentication){
-        String name = authentication.getName();
+    public void edit(@PathVariable Long novelId, @RequestBody EditNovelRequest request, Authentication authentication) {
+        User user = ClassUtils.getSafeCastInstance(authentication.getPrincipal(), User.class);
 
-        novelService.edit(novelId, request, name);
+        novelService.edit(novelId, request, user);
     }
 
     /**
@@ -59,9 +61,9 @@ public class NovelController {
      */
     @DeleteMapping("/{novelId}")
     public void delete(@PathVariable Long novelId, Authentication authentication) {
-        String name = authentication.getName();
+        User user = ClassUtils.getSafeCastInstance(authentication.getPrincipal(), User.class);
 
-        novelService.delete(novelId, name);
+        novelService.delete(novelId, user);
     }
 
     /**
@@ -69,7 +71,7 @@ public class NovelController {
      * URL 파라미터: GetNovelListSearch
      */
     @GetMapping
-    public PageingResponse<GetNovelListResponse> getList(@ModelAttribute GetNovelListSearch getNovelListSearch){
+    public PageingResponse<GetNovelListResponse> getList(@ModelAttribute GetNovelListSearch getNovelListSearch) {
         return novelService.getList(getNovelListSearch);
     }
 

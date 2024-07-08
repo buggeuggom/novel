@@ -3,10 +3,8 @@ package com.novel.api.fixture;
 import com.novel.api.domain.novel.Genre;
 import lombok.Data;
 
-import static com.novel.api.domain.novel.NovelStatus.PROGRESS;
-
 public class TestInfoFixture {
-    public static TestInfo  get(){
+    public static TestInfo get() {
         TestInfo info = new TestInfo();
 
         info.setUserId(101L);
@@ -26,7 +24,7 @@ public class TestInfoFixture {
 
 
     @Data
-    public static class TestInfo{
+    public static class TestInfo {
         private Long novelId;
         private Long userId;
         private String userName;

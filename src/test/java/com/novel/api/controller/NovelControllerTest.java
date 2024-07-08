@@ -26,7 +26,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import static com.novel.api.domain.novel.Genre.*;
 import static com.novel.api.domain.novel.NovelStatus.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;

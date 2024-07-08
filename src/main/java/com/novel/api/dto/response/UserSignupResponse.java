@@ -14,7 +14,7 @@ public class UserSignupResponse {
         this.name = name;
     }
 
-    public static UserSignupResponse fromDto(UserDto dto){
+    public static UserSignupResponse fromDto(UserDto dto) {
         return new UserSignupResponse(
                 dto.getEmail(),
                 dto.getName()

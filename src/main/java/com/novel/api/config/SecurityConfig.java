@@ -36,7 +36,7 @@ public class SecurityConfig {
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/*/users/*","/login").permitAll()
+                        .requestMatchers("/api/*/users/*", "/login").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtFilter(customUserDetailsService, jwtUtils), LoginFilter.class)
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtils), UsernamePasswordAuthenticationFilter.class)

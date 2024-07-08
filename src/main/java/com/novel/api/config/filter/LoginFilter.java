@@ -22,7 +22,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
-    private  final String secretKey = " hwsadadasdxqwangingyu_ghkddlseb_secret_key";
+    private final String secretKey = " hwsadadasdxqwangingyu_ghkddlseb_secret_key";
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
