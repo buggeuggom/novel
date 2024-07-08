@@ -6,6 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 public class UserFixture {
 
+    public static User get(String name, String password){
+        return User.builder()
+                .name(name)
+                .email("test@email.com")
+                .password(password)
+                .userRole(UserRole.READER)
+                .build();
+    }
 
     public static User get(){
         return User.builder()

@@ -29,7 +29,8 @@ public class User  extends AuditingFields {
     private UserRole userRole;
 
     @Builder
-    private User(String name, String email, String password, UserRole userRole) {
+    private User(Long id, String name, String email, String password, UserRole userRole) {
+        this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
