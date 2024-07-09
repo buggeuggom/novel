@@ -21,8 +21,8 @@ import java.util.Iterator;
 public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtUtils jwtUtils;
-    private final String secretKey = " hwsadadasdxqwangingyu_ghkddlseb_secret_key";
+    private final String secretKey;
+    private final Long expiredTimeMs;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
@@ -48,7 +48,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = iterator.next();
 
         String role = auth.getAuthority();
-        String token = jwtUtils.createJwt(username, role, secretKey);
+        String token = JwtUtils.generateAccessToken(username, role, secretKey, expiredTimeMs);
         response.addHeader("Authorization", "Bearer " + token);
     }
 

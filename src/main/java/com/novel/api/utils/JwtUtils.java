@@ -4,20 +4,13 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
 
-@Component
 public class JwtUtils {
-
-
-    @Value("${jwt.token.expired-time-ms}")
-    private Long expiredMs;
 
     public static boolean validate(String token, String name, String secretKey) {
 
@@ -31,7 +24,7 @@ public class JwtUtils {
     }
 
 
-    public String createJwt(String username, String role, String secretKey) {
+    public static String generateAccessToken(String username, String role, String secretKey, long expiredTimeMs) {
         Claims claims = Jwts.claims();
         claims.put("username", username);
         claims.put("role", role);
@@ -39,7 +32,7 @@ public class JwtUtils {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiredMs))
+                .setExpiration(new Date(System.currentTimeMillis() + expiredTimeMs))
                 .signWith(getSigningKey(secretKey), SignatureAlgorithm.HS256)
                 .compact();
     }
