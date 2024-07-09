@@ -72,7 +72,6 @@ public class NovelController {
 
     /**
      * 설명: 특정 소설 리스트 조회
-     * URL 파라미터: GetNovelListSearch
      */
     @GetMapping
     public PageingResponse<GetNovelListResponse> getList(@ModelAttribute GetNovelListSearch getNovelListSearch) {
