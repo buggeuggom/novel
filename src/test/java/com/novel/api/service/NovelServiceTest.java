@@ -196,8 +196,6 @@ class NovelServiceTest {
         //when
         when(novelRepository.findById(fixture.getNovelId()))
                 .thenReturn(Optional.empty());
-        when(userRepository.findByName(fixture.getUserName()))
-                .thenReturn(Optional.of(UserFixture.get(fixture.getUserName(), fixture.getPassword())));
 
 
         //then
@@ -223,8 +221,6 @@ class NovelServiceTest {
         //when
         when(novelRepository.findById(fixture.getNovelId()))
                 .thenReturn(Optional.of(mockNovel));
-        when(userRepository.findByName(fixture.getUserName()))
-                .thenReturn(Optional.of(mockUser));
         when(mockNovel.getUser()).thenReturn(mock(User.class));
 
         //then
@@ -250,8 +246,6 @@ class NovelServiceTest {
         //when
         when(novelRepository.findById(fixture.getNovelId()))
                 .thenReturn(Optional.of(mockNovel));
-        when(userRepository.findByName(fixture.getUserName()))
-                .thenReturn(Optional.of(mockUser));
         when(mockNovel.getUser()).thenReturn(mockUser);
 
         //then
@@ -265,12 +259,10 @@ class NovelServiceTest {
         var fixture = TestInfoFixture.get();
 
         User mockUser = mock(User.class);
+
         //when
         when(novelRepository.findById(fixture.getNovelId()))
                 .thenReturn(Optional.empty());
-        when(userRepository.findByName(fixture.getUserName()))
-                .thenReturn(Optional.of(UserFixture.get(fixture.getUserName(), fixture.getPassword())));
-
 
         //then
         var exception = assertThrows(NovelApplicationException.class,
@@ -294,8 +286,6 @@ class NovelServiceTest {
         //when
         when(novelRepository.findById(fixture.getNovelId()))
                 .thenReturn(Optional.of(mockNovel));
-        when(userRepository.findByName(fixture.getUserName()))
-                .thenReturn(Optional.of(mockUser));
         when(mockNovel.getUser()).thenReturn(mock(User.class));
 
         //then

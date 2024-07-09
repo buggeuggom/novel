@@ -25,10 +25,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
 
     private final CustomUserDetailsService customUserDetailsService;
-
-    private final JwtUtils jwtUtils;
-
-    private final String secretKey = " hwsadadasdxqwangingyu_ghkddlseb_secret_key";
+    private final String secretKey;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -45,7 +42,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 token = header.split(" ")[1].trim();
             }
 
-            String userName = jwtUtils.getUsername(token, secretKey);
+            String userName = JwtUtils.getUsername(token, secretKey);
 
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(userName);
             if (!JwtUtils.validate(token, userDetails.getUsername(), secretKey)) {
