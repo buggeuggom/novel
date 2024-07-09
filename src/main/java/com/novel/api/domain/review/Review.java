@@ -32,7 +32,8 @@ public class Review extends AuditingFields {
     private String body;
 
     @Builder
-    private Review(User user, Novel novel, Integer score, String body) {
+    private Review(Long id, User user, Novel novel, Integer score, String body) {
+        this.id = id;
         this.user = user;
         this.novel = novel;
         this.score = score;

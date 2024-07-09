@@ -3,17 +3,8 @@ package com.novel.api.dto;
 import com.novel.api.domain.novel.Genre;
 import com.novel.api.domain.novel.Novel;
 import com.novel.api.domain.novel.NovelStatus;
-import com.novel.api.domain.user.User;
-import com.novel.api.domain.user.UserRole;
-import jakarta.persistence.Column;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.Builder;
 import lombok.Getter;
-
-import static jakarta.persistence.EnumType.STRING;
-import static jakarta.persistence.FetchType.LAZY;
 
 @Getter
 public class NovelDto {
@@ -43,7 +34,7 @@ public class NovelDto {
                 .explanation(entity.getExplanation())
                 .novelStatus(entity.getNovelStatus())
                 .genre(entity.getGenre())
-                .userDto(UserDto.fromEntity(entity.getUser()))
+                .userDto(UserDto.from(entity.getUser()))
                 .build();
     }
 }

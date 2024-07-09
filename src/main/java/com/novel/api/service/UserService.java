@@ -32,6 +32,6 @@ public class UserService {
                 .userRole(READER)
                 .build();
 
-        return UserDto.fromEntity(userRepository.save(user));
+        return UserDto.from(userRepository.save(user));
     }
 }
