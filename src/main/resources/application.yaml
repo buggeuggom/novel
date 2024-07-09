@@ -13,7 +13,9 @@ spring:
       on-profile: common
 
 jwt:
-  token.expired-time-ms: 2592000000
+  token:
+    expired-time-ms: 2592000000
+    secret-key: hwanginkyu42ghkddlsrb42gnswp97
 
 ---
 spring:
