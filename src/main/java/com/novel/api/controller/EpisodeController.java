@@ -1,13 +1,13 @@
 package com.novel.api.controller;
 
 import com.novel.api.domain.user.User;
+import com.novel.api.dto.CustomUserDetails;
 import com.novel.api.dto.request.episode.EpisodeSearch;
 import com.novel.api.dto.request.episode.WriteEpisodeRequest;
 import com.novel.api.dto.response.episode.EpisodeListResponse;
 import com.novel.api.dto.response.episode.EpisodeResponse;
 import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.service.EpisodeService;
-import com.novel.api.utils.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +21,8 @@ public class EpisodeController {
 
     @PostMapping("/novels/{novelId}/episodes")
     public void write(@PathVariable Long novelId, @RequestBody WriteEpisodeRequest request, Authentication authentication) {
-        User user = ClassUtils.getSafeCastInstance(authentication.getPrincipal(), User.class);
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = userDetails.getUser();
 
         episodeService.write(novelId, request, user);
     }

@@ -1,6 +1,7 @@
 package com.novel.api.config;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.novel.api.config.filter.JwtFilter;
 import com.novel.api.config.filter.LoginFilter;
 import com.novel.api.service.CustomUserDetailsService;
@@ -28,12 +29,13 @@ public class SecurityConfig {
 
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomUserDetailsService customUserDetailsService;
+    private final ObjectMapper objectMapper;
 
     @Value("${jwt.token.expired-time-ms}")
     private Long expiredTimeMs;
-
     @Value("${jwt.token.secret-key}")
     private String secretKey;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
@@ -44,7 +46,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/*/users/*", "/login").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtFilter(customUserDetailsService, secretKey), LoginFilter.class)
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), secretKey, expiredTimeMs), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), objectMapper, secretKey, expiredTimeMs), UsernamePasswordAuthenticationFilter.class)
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(STATELESS))
                 .build();
