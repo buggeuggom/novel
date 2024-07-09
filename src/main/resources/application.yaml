@@ -15,7 +15,7 @@ spring:
 jwt:
   token:
     expired-time-ms: 2592000000
-    secret-key: hwanginkyu42ghkddlsrb42gnswp97
+    secret-key: hwanginkyu42-ghkddlsrb42-gnswp97-ghkddlstn42
 
 ---
 spring:
