@@ -39,6 +39,7 @@ class EpisodeControllerTest {
     MockMvc mockMvc;
     @Autowired
     ObjectMapper objectMapper;
+
     @MockBean
     EpisodeService episodeService;
 
