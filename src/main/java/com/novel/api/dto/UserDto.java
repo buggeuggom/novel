@@ -21,7 +21,7 @@ public class UserDto {
         this.userRole = userRole;
     }
 
-    public static UserDto fromEntity(User entity) {
+    public static UserDto from(User entity) {
         return new UserDto(
                 entity.getId(),
                 entity.getName(),

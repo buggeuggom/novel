@@ -2,7 +2,6 @@ package com.novel.api.service;
 
 import com.novel.api.domain.user.User;
 import com.novel.api.dto.CustomUserDetails;
-import com.novel.api.exception.ErrorCode;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

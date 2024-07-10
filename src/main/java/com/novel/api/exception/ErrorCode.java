@@ -15,14 +15,15 @@ public enum ErrorCode {
 
     //404
     EPISODE_NOT_FOUND(NOT_FOUND, "Episode not founded"),
+    REVIEW_NOT_FOUND(NOT_FOUND, "Review not founded "),
     NOVEL_NOT_FOUND(NOT_FOUND, "Novel not founded"),
     USER_NOT_FOUND(NOT_FOUND, "User not founded"),
 
 
     //409
+    ALREADY_REVIEW_WROTE(CONFLICT, "User already wrote review of this novel"),
     DUPLICATED_NOVEL_NAME(CONFLICT, "Duplicated novel name"),
     DUPLICATED_USER_NAME(CONFLICT, "Duplicated user name"),
-
 
     //500
     DATABASE_ERROR(INTERNAL_SERVER_ERROR, "Database error occurs"),

@@ -3,6 +3,9 @@ package com.novel.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.novel.api.dto.UserDto;
 import com.novel.api.dto.request.UserSignupRequest;
+import com.novel.api.exception.ErrorCode;
+import com.novel.api.exception.NovelApplicationException;
+import com.novel.api.fixture.UserFixture;
 import com.novel.api.service.UserService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,6 +17,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static com.novel.api.exception.ErrorCode.DUPLICATED_USER_NAME;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -26,11 +32,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
 
     @Autowired
-    private MockMvc mockMvc;
+    MockMvc mockMvc;
+    @Autowired
+    ObjectMapper objectMapper;
     @MockBean
     UserService userService;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     /**
      * 회원 가입
@@ -46,7 +52,7 @@ class UserControllerTest {
                 .password("password")
                 .build();
 
-        when(userService.signup(request)).thenReturn(mock(UserDto.class));
+        when(userService.signup(any())).thenReturn(UserDto.from(UserFixture.get()));
 
         //expected
         mockMvc.perform(post("/api/v1/users/signup")
@@ -57,7 +63,6 @@ class UserControllerTest {
     }
 
     @Test
-    @WithAnonymousUser
     @DisplayName("[signup][fail]: 중복된 user name")
     void signup_fail() throws Exception {
         //given
@@ -67,13 +72,13 @@ class UserControllerTest {
                 .password("password")
                 .build();
 
-        when(userService.signup(request)).thenThrow(new RuntimeException());
+        when(userService.signup(any())).thenThrow(new NovelApplicationException(DUPLICATED_USER_NAME));
 
         //expected
         mockMvc.perform(post("/api/v1/users/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
-                .andExpect(status().is4xxClientError());
+                .andExpect(status().is(DUPLICATED_USER_NAME.getStatus().value()));
     }
 }
