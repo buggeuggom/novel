@@ -10,6 +10,7 @@ import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.dto.response.novel.GetNovelListResponse;
 import com.novel.api.dto.response.novel.GetNovelResponse;
 import com.novel.api.service.NovelService;
+import com.novel.api.utils.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +39,7 @@ public class NovelController {
     @PostMapping
     public void write(@RequestBody WriteNovelRequest request, Authentication authentication) {
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User user = userDetails.getUser();
+        User user = ClassUtils.getSafeUserBySafeCast(authentication);
 
         novelService.write(request, user);
     }
@@ -52,8 +52,7 @@ public class NovelController {
     @PutMapping("/{novelId}")
     public void edit(@PathVariable Long novelId, @RequestBody EditNovelRequest request, Authentication authentication) {
 
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User user = userDetails.getUser();
+        User user = ClassUtils.getSafeUserBySafeCast(authentication);
 
         novelService.edit(novelId, request, user);
     }
@@ -64,8 +63,7 @@ public class NovelController {
      */
     @DeleteMapping("/{novelId}")
     public void delete(@PathVariable Long novelId, Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User user = userDetails.getUser();
+        User user = ClassUtils.getSafeUserBySafeCast(authentication);
 
         novelService.delete(novelId, user);
     }

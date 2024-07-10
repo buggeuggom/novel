@@ -1,7 +1,7 @@
 package com.novel.api.service;
 
 import com.novel.api.domain.user.User;
-import com.novel.api.dto.CustomUser;
+import com.novel.api.dto.CustomUserDetails;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +23,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         User userData = userRepository.findByName(username).orElseThrow(()->new NovelApplicationException(USER_NOT_FOUND));
 
-        return new CustomUser(userData);
+        return new CustomUserDetails(userData);
     }
 }

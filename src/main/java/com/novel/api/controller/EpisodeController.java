@@ -8,6 +8,7 @@ import com.novel.api.dto.response.episode.EpisodeListResponse;
 import com.novel.api.dto.response.episode.EpisodeResponse;
 import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.service.EpisodeService;
+import com.novel.api.utils.ClassUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -26,12 +27,11 @@ public class EpisodeController {
      */
     @PostMapping("/novels/{novelId}/episodes")
     public void write(@PathVariable Long novelId, @RequestBody WriteEpisodeRequest request, Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        User user = userDetails.getUser();
+
+        User user = ClassUtils.getSafeUserBySafeCast(authentication);
 
         episodeService.write(novelId, request, user);
     }
-
     /**
      * 설명: 특정 에피소드 조회
      * URL 파라미터: episodeId
