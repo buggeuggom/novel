@@ -1,11 +1,13 @@
 package com.novel.api.service;
 
+import com.novel.api.domain.review.Review;
 import com.novel.api.domain.user.User;
 import com.novel.api.dto.request.review.WriteReviewRequest;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.ReviewFixture;
-import com.novel.api.repository.ReviewRepository;
+import com.novel.api.repository.review.ReviewRepository;
 import com.novel.api.repository.UserRepository;
+import com.novel.api.repository.novel.NovelRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -34,40 +36,63 @@ class ReviewServiceTest {
     UserRepository userRepository;
     @MockBean
     ReviewRepository reviewRepository;
+    @MockBean
+    NovelRepository novelRepository;
 
     /**
      * write test
      */
-
     @Test
     @DisplayName("[write][success]:")
     void write_success() {
         //given
+        var info = ReviewFixture.get();
+
         var request = mock(WriteReviewRequest.class);
         User mockUser = mock(User.class);
 
         //when
-        when(reviewRepository.findByUser(mockUser)).thenReturn(Optional.empty());
+        when(novelRepository.findById(info.getNovel().getId())).thenReturn(Optional.of(info.getNovel()));
+        when(reviewRepository.findByNovelAndUser(info.getNovel(), mockUser)).thenReturn(Optional.empty());
 
         //then
-        assertDoesNotThrow(() -> reviewService.write(request, mockUser));
+        assertDoesNotThrow(() -> reviewService.write(info.getNovel().getId(), request, mockUser));
+    }
+
+    @Test
+    @DisplayName("[write][fail]: NOVEL_NOT_FOUND")
+    void write_fail_novel_not_found() {
+        //given
+        var info = ReviewFixture.get();
+
+        var request = mock(WriteReviewRequest.class);
+        User mockUser = mock(User.class);
+
+        //when
+        when(novelRepository.findById(info.getNovel().getId())).thenReturn(Optional.empty());
+        when(reviewRepository.findByNovelAndUser(info.getNovel(), mockUser)).thenReturn(Optional.empty());
+
+        //then
+        var e = assertThrows(NovelApplicationException.class, () -> reviewService.write(info.getNovel().getId(), request, mockUser));
+        assertEquals(NOVEL_NOT_FOUND, e.getErrorCode());
     }
 
     @Test
     @DisplayName("[write][fail]: ALREADY_REVIEW")
     void write_fail_already_review() {
         //given
-        var fixture = ReviewFixture.get();
+        var info = ReviewFixture.get();
 
         var request = mock(WriteReviewRequest.class);
         User mockUser = mock(User.class);
 
         //when
-        when(reviewRepository.findByUser(mockUser)).thenReturn(Optional.of(fixture));
+        when(novelRepository.findById(info.getNovel().getId())).thenReturn(Optional.of(info.getNovel()));
+        when(reviewRepository.findByNovelAndUser(info.getNovel(), mockUser)).thenReturn(Optional.of(info));
 
         //then
-        var e = assertThrows(NovelApplicationException.class, () -> reviewService.write(request, mockUser));
-        assertEquals(ALREADY_REVIEW.getStatus().name(), e);
+        var e = assertThrows(NovelApplicationException.class, () -> reviewService.write(info.getNovel().getId(), request, mockUser));
+        assertEquals(ALREADY_REVIEW_WROTE, e.getErrorCode());
     }
 
     /**
@@ -77,48 +102,31 @@ class ReviewServiceTest {
     @DisplayName("[delete][success]:")
     void delete_success() {
         //given
-        var info = ReviewFixture.get();
-        var request = mock(WriteReviewRequest.class);
+        Review mockReview = mock(Review.class);
         User mockUser = mock(User.class);
 
         //when
-        when(reviewRepository.findById(info.getId())).thenReturn(Optional.of(info));
-        when(info.getUser()).thenReturn(mockUser);
+        when(reviewRepository.findById(mockReview.getId())).thenReturn(Optional.of(mockReview));
+        when(mockReview.getUser()).thenReturn(mockUser);
 
         //then
-        assertDoesNotThrow(() -> reviewService.delete(info.getId(), mockUser));
+        assertDoesNotThrow(() -> reviewService.delete(mockReview.getId(), mockUser));
     }
 
     @Test
     @DisplayName("[delete][fail]: REVIEW_NOT_FOUND")
     void delete_fail_review_not_found() {
         //given
-        var info = ReviewFixture.get();
-        var request = mock(WriteReviewRequest.class);
+        Review mockReview = mock(Review.class);
         User mockUser = mock(User.class);
 
         //when
-        when(reviewRepository.findById(info.getId())).thenReturn(Optional.empty());
-        when(info.getUser()).thenReturn(mockUser);
+        when(reviewRepository.findById(mockReview.getId())).thenReturn(Optional.empty());
+        when(mockReview.getUser()).thenReturn(mockUser);
 
         //then
-        var e = assertThrows(NovelApplicationException.class, () -> reviewService.delete(info.getId(), mockUser));
-        assertEquals(REVIEW_NOT_FOUND.getStatus().name(), e);
-    }
-
-    @Test
-    @DisplayName("[delete][fail]: INVALID_PERMISSION")
-    void delete_fail_invalid_permission() {
-        //given
-        var info = ReviewFixture.get();
-        User mockUser = mock(User.class);
-
-        //when
-        when(reviewRepository.findById(info.getId())).thenReturn(Optional.of(info));
-
-        //then
-        var e = assertThrows(NovelApplicationException.class, () -> reviewService.delete(info.getId(), mockUser));
-        assertEquals(REVIEW_NOT_FOUND.getStatus().name(), e);
+        var e = assertThrows(NovelApplicationException.class, () -> reviewService.delete(mockReview.getId(), mockUser));
+        assertEquals(REVIEW_NOT_FOUND, e.getErrorCode());
     }
 
 }

@@ -57,7 +57,7 @@ class ReviewControllerTest {
 
         var request = WriteReviewRequest.builder()
                 .score(1)
-                .content("test content")
+                .body("test content")
                 .build();
 
         String json = objectMapper.writeValueAsString(request);
@@ -79,7 +79,7 @@ class ReviewControllerTest {
 
         var request = WriteReviewRequest.builder()
                 .score(1)
-                .content("test content")
+                .body("test content")
                 .build();
 
         String json = objectMapper.writeValueAsString(request);

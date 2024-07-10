@@ -21,7 +21,7 @@ public enum ErrorCode {
 
 
     //409
-    ALREADY_REVIEW(CONFLICT, "User already wrote review of this novel"),
+    ALREADY_REVIEW_WROTE(CONFLICT, "User already wrote review of this novel"),
     DUPLICATED_NOVEL_NAME(CONFLICT, "Duplicated novel name"),
     DUPLICATED_USER_NAME(CONFLICT, "Duplicated user name"),
 

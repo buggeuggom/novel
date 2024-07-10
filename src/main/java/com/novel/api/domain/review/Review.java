@@ -22,12 +22,14 @@ public class Review extends AuditingFields {
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
+
     @JoinColumn(name = "user_id")
     @ManyToOne(fetch = LAZY, optional = false)
     private User user;
     @JoinColumn(name = "novel_id")
     @ManyToOne(fetch = LAZY, optional = false)
     private Novel novel;
+
     private Integer score;
     private String body;
 

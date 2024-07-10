@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 public class WriteReviewRequest {
 
     private int score;
-    private String content;
+    private String body;
 
     @Builder
-    public WriteReviewRequest(int score, String content) {
+    public WriteReviewRequest(int score, String body) {
         this.score = score;
-        this.content = content;
+        this.body = body;
     }
 }
