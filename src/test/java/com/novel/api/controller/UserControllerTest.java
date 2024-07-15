@@ -3,7 +3,6 @@ package com.novel.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.novel.api.dto.UserDto;
 import com.novel.api.dto.request.UserSignupRequest;
-import com.novel.api.exception.ErrorCode;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.UserFixture;
 import com.novel.api.service.UserService;
@@ -17,7 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.novel.api.exception.ErrorCode.DUPLICATED_USER_NAME;
+import static com.novel.api.exception.ErrorCode.DUPLICATED_USER;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
@@ -72,13 +71,13 @@ class UserControllerTest {
                 .password("password")
                 .build();
 
-        when(userService.signup(any())).thenThrow(new NovelApplicationException(DUPLICATED_USER_NAME));
+        when(userService.signup(any())).thenThrow(new NovelApplicationException(DUPLICATED_USER));
 
         //expected
         mockMvc.perform(post("/api/v1/users/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
-                .andExpect(status().is(DUPLICATED_USER_NAME.getStatus().value()));
+                .andExpect(status().is(DUPLICATED_USER.getStatus().value()));
     }
 }

@@ -68,7 +68,7 @@ class UserServiceTest {
                 .build();
         //expected
         var e = assertThrows(NovelApplicationException.class, () -> userService.signup(request));
-        assertEquals(e.getErrorCode(), DUPLICATED_USER_NAME);
+        assertEquals(e.getErrorCode(), DUPLICATED_USER);
     }
 
 

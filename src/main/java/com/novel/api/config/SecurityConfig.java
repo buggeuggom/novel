@@ -2,24 +2,25 @@ package com.novel.api.config;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.novel.api.config.filter.JsonEmailPasswordLoginFilter;
 import com.novel.api.config.filter.JwtFilter;
-import com.novel.api.config.filter.LoginFilter;
-import com.novel.api.service.CustomUserDetailsService;
-import com.novel.api.utils.JwtUtils;
+import com.novel.api.config.filter.handler.LoginFailureHandler;
+import com.novel.api.config.filter.handler.LoginSuccessJWTProvideHandler;
+import com.novel.api.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.*;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
@@ -27,9 +28,10 @@ import static org.springframework.security.config.http.SessionCreationPolicy.*;
 public class SecurityConfig {
 
 
-    private final AuthenticationConfiguration authenticationConfiguration;
-    private final CustomUserDetailsService customUserDetailsService;
+    private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper;
+    private final UserService userService;
+
 
     @Value("${jwt.token.expired-time-ms}")
     private Long expiredTimeMs;
@@ -45,20 +47,53 @@ public class SecurityConfig {
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/*/users/*", "/login").permitAll()
                         .anyRequest().authenticated())
-                .addFilterBefore(new JwtFilter(customUserDetailsService, secretKey), LoginFilter.class)
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), objectMapper, secretKey, expiredTimeMs), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(jsonEmailPasswordLoginFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtFilter(userService, secretKey), JsonEmailPasswordLoginFilter.class)
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(STATELESS))
                 .build();
     }
 
+
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public JsonEmailPasswordLoginFilter jsonEmailPasswordLoginFilter(){
+        JsonEmailPasswordLoginFilter filter = new JsonEmailPasswordLoginFilter(objectMapper);
+        filter.setAuthenticationManager(authenticationManager());
+
+        filter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler());
+        filter.setAuthenticationFailureHandler(loginFailureHandler());
+
+        return filter;
+    }
+
+    // 인증 관리자 관련 설정
+    @Bean
+    public AuthenticationManager authenticationManager() {//AuthenticationManager 등록
+        DaoAuthenticationProvider provider = daoAuthenticationProvider();//DaoAuthenticationProvider 사용
+        provider.setPasswordEncoder(passwordEncoder);
+        return new ProviderManager(provider);
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    public DaoAuthenticationProvider daoAuthenticationProvider() {
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(userService);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
+
+        return daoAuthenticationProvider;
     }
+
+    @Bean
+    public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
+        return new LoginSuccessJWTProvideHandler(secretKey, expiredTimeMs);
+    }
+
+    @Bean
+    public LoginFailureHandler loginFailureHandler(){
+        return new LoginFailureHandler(objectMapper);
+    }
+
+
+
+
 }

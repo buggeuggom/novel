@@ -1,7 +1,6 @@
 package com.novel.api.config.filter;
 
-import com.novel.api.dto.CustomUserDetails;
-import com.novel.api.service.CustomUserDetailsService;
+import com.novel.api.service.UserService;
 import com.novel.api.utils.JwtUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,7 +8,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,7 +22,7 @@ import java.io.IOException;
 public class JwtFilter extends OncePerRequestFilter {
 
 
-    private final CustomUserDetailsService customUserDetailsService;
+    private final UserService userService;
     private final String secretKey;
 
     @Override
@@ -42,9 +40,9 @@ public class JwtFilter extends OncePerRequestFilter {
                 token = header.split(" ")[1].trim();
             }
 
-            String userName = JwtUtils.getUsername(token, secretKey);
+            String email = JwtUtils.getEmail(token, secretKey);
 
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(userName);
+            UserDetails userDetails = userService.loadUserByUsername(email);
             if (!JwtUtils.validate(token, userDetails.getUsername(), secretKey)) {
                 filterChain.doFilter(request, response);
                 return;

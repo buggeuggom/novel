@@ -2,7 +2,6 @@ package com.novel.api.controller;
 
 
 import com.novel.api.domain.user.User;
-import com.novel.api.dto.CustomUserDetails;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
 import com.novel.api.dto.request.novel.WriteNovelRequest;
 import com.novel.api.dto.request.novel.EditNovelRequest;

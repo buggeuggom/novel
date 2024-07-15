@@ -11,7 +11,9 @@ import static org.springframework.http.HttpStatus.*;
 public enum ErrorCode {
 
     //401
+    INVALID_EMAIL_OR_PASSWORD(HttpStatus.UNAUTHORIZED, "Invalid email or password"),
     INVALID_PERMISSION(UNAUTHORIZED, "User has invalid permission"),
+
 
     //404
     EPISODE_NOT_FOUND(NOT_FOUND, "Episode not founded"),
@@ -25,7 +27,7 @@ public enum ErrorCode {
     ALREADY_WROTE_REVIEW(CONFLICT, "User already wrote review of this novel"),
     ALREADY_SUBSCRIBED_NOVEL(CONFLICT, "User already subscribed novel"),
     DUPLICATED_NOVEL_NAME(CONFLICT, "Duplicated novel name"),
-    DUPLICATED_USER_NAME(CONFLICT, "Duplicated user name"),
+    DUPLICATED_USER(CONFLICT, "Duplicated user"),
 
     //500
     DATABASE_ERROR(INTERNAL_SERVER_ERROR, "Database error occurs"),

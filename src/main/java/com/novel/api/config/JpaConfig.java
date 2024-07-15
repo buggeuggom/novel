@@ -1,6 +1,6 @@
 package com.novel.api.config;
 
-import com.novel.api.dto.CustomUserDetails;
+import com.novel.api.utils.ClassUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;
@@ -16,12 +16,12 @@ import java.util.Optional;
 public class JpaConfig {
 
     @Bean
-    public AuditorAware<String> auditorAware() {
+    public AuditorAware<Long> auditorAware() {
+
         return () -> Optional.ofNullable(SecurityContextHolder.getContext())
                 .map(SecurityContext::getAuthentication)
                 .filter(Authentication::isAuthenticated)
-                .map(Authentication::getPrincipal)
-                .map(CustomUserDetails.class::cast)
-                .map(CustomUserDetails::getUsername);
+                .map(authentication -> ClassUtils.getSafeUserBySafeCast(authentication))
+                .map(user -> user.getId());
     }
 }
