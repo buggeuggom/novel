@@ -92,7 +92,7 @@ class ReviewServiceTest {
 
         //then
         var e = assertThrows(NovelApplicationException.class, () -> reviewService.write(info.getNovel().getId(), request, mockUser));
-        assertEquals(ALREADY_REVIEW_WROTE, e.getErrorCode());
+        assertEquals(ALREADY_WROTE_REVIEW, e.getErrorCode());
     }
 
     /**

@@ -6,7 +6,6 @@ import com.novel.api.domain.user.User;
 import com.novel.api.dto.request.review.ReviewSearch;
 import com.novel.api.dto.request.review.WriteReviewRequest;
 import com.novel.api.dto.response.PageingResponse;
-import com.novel.api.dto.response.episode.EpisodeListResponse;
 import com.novel.api.dto.response.review.ReviewListResponse;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.repository.review.ReviewRepository;
@@ -32,7 +31,7 @@ public class ReviewService {
 
         //사용자가 리뷰를 작성했는지 확인
         reviewRepository.findByNovelAndUser(novel, user).ifPresent(it -> {
-            new NovelApplicationException(ALREADY_REVIEW_WROTE);
+            new NovelApplicationException(ALREADY_WROTE_REVIEW);
         });
 
         Review review = Review.builder()
@@ -49,7 +48,7 @@ public class ReviewService {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NovelApplicationException(REVIEW_NOT_FOUND));
 
-        if (!review.getUser().equals(user)){
+        if (!review.getUser().equals(user)) {
             throw new NovelApplicationException(INVALID_PERMISSION);
         }
 
