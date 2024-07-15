@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageImpl;
 import java.util.List;
 
 import static com.novel.api.domain.novel.QNovel.*;
+import static com.novel.api.domain.subscription.QSubscription.*;
 
 @RequiredArgsConstructor
 public class NovelRepositoryImpl implements NovelRepositoryCustom{
@@ -27,13 +28,20 @@ public class NovelRepositoryImpl implements NovelRepositoryCustom{
                 .fetchFirst();
 
         List<Novel> novels = jpaQueryFactory.selectFrom(novel)
-                .where(titleStartWith(search.getTitle()), novelAuthorStartWith(search.getAuthor()), isNovelGenre(search.getGenre()))
+                .leftJoin(subscription.novel, novel)
+                .where(titleStartWith(search.getTitle()), novelAuthorStartWith(search.getAuthor()), isNovelGenre(search.getGenre()), isSubscribe(search.getSubscribe()))
                 .limit(search.getSize())
                 .offset(search.getOffset())
                 .orderBy(novel.id.desc())
                 .fetch();
 
         return new PageImpl<>(novels, search.getPageable(), totalCount);
+    }
+
+    private static BooleanExpression isSubscribe(boolean subscribe) {
+        if (subscribe) subscription.id.isNotNull();
+
+        return null;
     }
 
     private static BooleanExpression novelAuthorStartWith(String author) {
@@ -54,5 +62,6 @@ public class NovelRepositoryImpl implements NovelRepositoryCustom{
 
         return novel.genre.eq(genre);
     }
+
 
 }
