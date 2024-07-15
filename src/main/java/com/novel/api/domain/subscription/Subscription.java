@@ -31,7 +31,8 @@ public class Subscription extends AuditingFields {
     private Novel novel;
 
     @Builder
-    private Subscription(User user, Novel novel) {
+    private Subscription(Long id,User user, Novel novel) {
+        this.id = id;
         this.user = user;
         this.novel = novel;
     }
