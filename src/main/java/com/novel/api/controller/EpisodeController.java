@@ -1,7 +1,6 @@
 package com.novel.api.controller;
 
 import com.novel.api.domain.user.User;
-import com.novel.api.dto.CustomUserDetails;
 import com.novel.api.dto.request.episode.EpisodeSearch;
 import com.novel.api.dto.request.episode.WriteEpisodeRequest;
 import com.novel.api.dto.response.episode.EpisodeListResponse;

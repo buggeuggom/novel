@@ -1,4 +1,4 @@
-package com.novel.api.dto;
+package com.novel.api.dto.security;
 
 import com.novel.api.domain.user.User;
 import lombok.Getter;
@@ -11,7 +11,8 @@ import java.util.Collection;
 
 @Getter
 @RequiredArgsConstructor
-public class CustomUserDetails implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
+
 
     private final User user;
 
@@ -32,7 +33,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getName();
+        return user.getEmail();
     }
 
 
