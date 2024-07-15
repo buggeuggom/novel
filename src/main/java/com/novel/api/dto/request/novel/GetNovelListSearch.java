@@ -23,8 +23,9 @@ public class GetNovelListSearch {
     private Genre genre;
 
     @Builder.Default
+    private Boolean subscribe = false;
+    @Builder.Default
     private Integer page = 1;
-
     @Builder.Default
     private Integer size = 10;
 
