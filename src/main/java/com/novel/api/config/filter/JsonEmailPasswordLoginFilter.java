@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 public class JsonEmailPasswordLoginFilter extends AbstractAuthenticationProcessingFilter {
 
 
-    private static final String DEFAULT_LOGIN_REQUEST_URL = "/login";
+    private static final String DEFAULT_LOGIN_REQUEST_URL = "/api/login";
     private static final String HTTP_METHOD = "POST";    //HTTP 메서드의 방식은 POST 이다.
     private static final String CONTENT_TYPE = "application/json";//json 타입의 데이터로만 로그인을 진행한다.
     private static final AntPathRequestMatcher DEFAULT_LOGIN_PATH_REQUEST_MATCHER =
