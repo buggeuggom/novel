@@ -30,9 +30,9 @@ public class EpisodeService {
         Novel novel = novelRepository.findById(novelId)
                 .orElseThrow(() -> new NovelApplicationException(NOVEL_NOT_FOUND));
 
-        isPermittedUserOrInvalidPermissionException(user, novel);
+        isPermittedUserForNovelOrInvalidPermissionException(user, novel);
 
-        Episode episode = Episode.builder()
+        var episode = Episode.builder()
                 .title(request.getTitle())
                 .detail(request.getContent())
                 .novel(novel)
@@ -49,12 +49,13 @@ public class EpisodeService {
     }
 
     public PageingResponse<EpisodeListResponse> getList(Long novelId, EpisodeSearch search) {
+
         Page<Episode> list = episodeRepository.getList(novelId, search);
 
         return new PageingResponse<>(list, EpisodeListResponse.class);
     }
 
-    private static void isPermittedUserOrInvalidPermissionException(User user, Novel novel) {
+    private static void isPermittedUserForNovelOrInvalidPermissionException(User user, Novel novel) {
         if (!novel.getUser().equals(user)) {
             throw new NovelApplicationException(INVALID_PERMISSION);
         }

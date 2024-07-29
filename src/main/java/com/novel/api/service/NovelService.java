@@ -31,7 +31,7 @@ public class NovelService {
             throw new NovelApplicationException(DUPLICATED_NOVEL_NAME);
         });
 
-        Novel novel = Novel.builder()
+        var novel = Novel.builder()
                 .title(request.getTitle())
                 .explanation(request.getExplanation())
                 .novelStatus(PROGRESS)
@@ -60,7 +60,7 @@ public class NovelService {
 
         Novel novel = getNovelOrNovelNotFoundException(novelId);
 
-        isPermittedUserOrInvalidPermissionException(user, novel);
+        isPermittedUserForNovelOrInvalidPermissionException(user, novel);
 
         novel.edit(request);
     }
@@ -69,7 +69,7 @@ public class NovelService {
 
         Novel novel = getNovelOrNovelNotFoundException(novelId);
 
-        isPermittedUserOrInvalidPermissionException(user, novel);
+        isPermittedUserForNovelOrInvalidPermissionException(user, novel);
 
         novelRepository.delete(novel);
     }
@@ -83,7 +83,7 @@ public class NovelService {
                 new NovelApplicationException(NOVEL_NOT_FOUND));
     }
 
-    private static void isPermittedUserOrInvalidPermissionException(User user, Novel novel) {
+    private static void isPermittedUserForNovelOrInvalidPermissionException(User user, Novel novel) {
         if (!novel.getUser().equals(user)) {
             throw new NovelApplicationException(INVALID_PERMISSION);
         }

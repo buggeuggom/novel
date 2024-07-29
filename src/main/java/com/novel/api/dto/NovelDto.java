@@ -6,6 +6,8 @@ import com.novel.api.domain.novel.NovelStatus;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class NovelDto {
 
@@ -16,15 +18,18 @@ public class NovelDto {
     private NovelStatus novelStatus;
     private Genre genre;
     private UserDto userDto;
+    private LocalDateTime createdAt;
+
 
     @Builder
-    private NovelDto(Long id, String title, String explanation, NovelStatus novelStatus, Genre genre, UserDto userDto) {
+    private NovelDto(Long id, String title, String explanation, NovelStatus novelStatus, Genre genre, UserDto userDto, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.explanation = explanation;
         this.novelStatus = novelStatus;
         this.genre = genre;
         this.userDto = userDto;
+        this.createdAt = createdAt;
     }
 
     public static NovelDto from(Novel entity) {
@@ -35,6 +40,7 @@ public class NovelDto {
                 .novelStatus(entity.getNovelStatus())
                 .genre(entity.getGenre())
                 .userDto(UserDto.from(entity.getUser()))
+                .createdAt(entity.getCreatedAt())
                 .build();
     }
 }
