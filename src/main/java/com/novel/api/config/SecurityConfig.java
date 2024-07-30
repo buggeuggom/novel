@@ -19,6 +19,11 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -44,11 +49,17 @@ public class SecurityConfig {
         return http.csrf((auth) -> auth.disable())
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
+
+                .cors((auth)-> auth.configurationSource(corsConfigurationSource()))
+
                 .authorizeHttpRequests((auth) -> auth
                         .requestMatchers("/api/*/users/*", "/login").permitAll()
                         .anyRequest().authenticated())
+
                 .addFilterAt(jsonEmailPasswordLoginFilter(), UsernamePasswordAuthenticationFilter.class)
+
                 .addFilterBefore(new JwtFilter(userService, secretKey), JsonEmailPasswordLoginFilter.class)
+
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(STATELESS))
                 .build();
@@ -85,7 +96,7 @@ public class SecurityConfig {
 
     @Bean
     public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
-        return new LoginSuccessJWTProvideHandler(secretKey, expiredTimeMs);
+        return new LoginSuccessJWTProvideHandler(secretKey, expiredTimeMs, objectMapper);
     }
 
     @Bean
@@ -93,7 +104,18 @@ public class SecurityConfig {
         return new LoginFailureHandler(objectMapper);
     }
 
+    //CORS
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
 
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        config.setAllowedMethods(Arrays.asList("POST","GET","DELETE","PUT"));
+        config.setAllowedHeaders(Arrays.asList("*"));
 
-
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 }
