@@ -24,15 +24,26 @@ spring:
       on-profile: local
 
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: jdbc:mariadb://localhost:3306/novel
+    url: jdbc:mysql://localhost:3306/novel
+    username: root
+    password: 1234
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/novel-database
 
     username: root
     password: 1234
   jpa:
     hibernate:
       ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
+    show-sql: true
