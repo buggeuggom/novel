@@ -1,0 +1,58 @@
+SET SESSION cte_max_recursion_depth = 10000;
+
+insert into novel(created_at, modified_at, user_id, explanation, title, genre, novel_status)
+WITH RECURSIVE cte (n) AS
+                   (SELECT 1
+                    UNION ALL
+                    SELECT n + 1
+                    FROM cte
+                    WHERE n < 10000 -- 생성하고 싶은 더미 데이터의 개수
+                   )
+SELECT
+    TIMESTAMP(DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 3650 + 1) DAY) + INTERVAL FLOOR(RAND() * 86400) SECOND) AS created_at ,
+    TIMESTAMP(DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 3650 + 1) DAY) + INTERVAL FLOOR(RAND() * 86400) SECOND) AS modified_at ,
+    FLOOR(1 + (RAND() * 4)) as user_id,
+    CONCAT('novel title: ', LPAD(n, 7, '0')) AS title,  -- 'Title' 다음에 7자리 숫자로 구성된 제목 생성
+    CONCAT('novel explanation: ', LPAD(n, 7, '0')) AS explanation,
+    ELT(FLOOR(1 + (RAND() * 3)), 'FANTASY', 'COMIC', 'ROMANCE') as genre,
+    'PROGRESS' as novel_status
+FROM cte;
+
+
+truncate episode;
+
+SET @novel_id = 0;
+SET @episode_order = 0;
+
+INSERT INTO episode (created_at, modified_at, novel_id, detail, title)
+
+SELECT now(),
+       now(),
+       n.id,
+       CONCAT('내용: ', @episode_order := @episode_order + 1),   -- 에피소드 이름 생성
+       CONCAT('제목: ', @episode_order)                             -- 에피소드 컨텐츠 생성
+FROM novel n
+    JOIN (
+    -- 각 소설에 대해 20~50개의 에피소드 수를 랜덤하게 생성
+    SELECT 1 AS idx UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL
+    SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10 UNION ALL
+    SELECT 11 UNION ALL SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15 UNION ALL
+    SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 UNION ALL SELECT 20 UNION ALL
+    SELECT 21 UNION ALL SELECT 22 UNION ALL SELECT 23 UNION ALL SELECT 24 UNION ALL SELECT 25 UNION ALL
+    SELECT 26 UNION ALL SELECT 27 UNION ALL SELECT 28 UNION ALL SELECT 29 UNION ALL SELECT 30 UNION ALL
+    SELECT 31 UNION ALL SELECT 32 UNION ALL SELECT 33 UNION ALL SELECT 34 UNION ALL SELECT 35 UNION ALL
+    SELECT 36 UNION ALL SELECT 37 UNION ALL SELECT 38 UNION ALL SELECT 39 UNION ALL SELECT 40 UNION ALL
+    SELECT 41 UNION ALL SELECT 42 UNION ALL SELECT 43 UNION ALL SELECT 44 UNION ALL SELECT 45 UNION ALL
+    SELECT 46 UNION ALL SELECT 47 UNION ALL SELECT 48 UNION ALL SELECT 49 UNION ALL SELECT 50
+) AS episode_count
+WHERE RAND() * 30 + 20 >= episode_count.idx  -- 20에서 50 사이의 랜덤한 에피소드 개수
+ORDER BY n.id;
+
+-- 에피소드 순서가 소설별로 리셋되도록 소설마다 에피소드 순서를 다시 초기화
+SET @episode_order = 0;
+
+
+
+
+
+
