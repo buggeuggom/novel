@@ -72,7 +72,7 @@ public class NovelController {
      */
     @GetMapping
     public PageingResponse<GetNovelListResponse> getList(@ModelAttribute GetNovelListSearch getNovelListSearch) {
-        return novelService.getList(getNovelListSearch);
+        return novelService.getNovelList(getNovelListSearch);
     }
 
 }

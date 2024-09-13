@@ -177,7 +177,7 @@ class NovelControllerTest {
     void getList_success() throws Exception {
 
         //when
-        when(novelService.getList(any())).thenReturn(mock(PageingResponse.class));
+        when(novelService.getNovelList(any())).thenReturn(mock(PageingResponse.class));
 
         //expected
         mockMvc.perform(get("/api/v1/novels")
@@ -193,7 +193,7 @@ class NovelControllerTest {
     @DisplayName("[getList][fail]: forbidden <- 로그인 안된 유저")
     void getList_fail_forbidden() throws Exception {
         //when
-        when(novelService.getList(any())).thenReturn(mock(PageingResponse.class));
+        when(novelService.getNovelList(any())).thenReturn(mock(PageingResponse.class));
 
         //expected
         mockMvc.perform(get("/api/v1/novels")

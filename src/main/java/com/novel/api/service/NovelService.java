@@ -11,6 +11,7 @@ import com.novel.api.dto.response.novel.GetNovelListResponse;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.repository.novel.NovelRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,7 +52,7 @@ public class NovelService {
     }
 
     @Transactional(readOnly = true)
-    public PageingResponse<GetNovelListResponse> getList(GetNovelListSearch search) {
+    public PageingResponse<GetNovelListResponse> getNovelList(GetNovelListSearch search) {
         Page<Novel> novelPage = novelRepository.getList(search);
         return new PageingResponse<>(novelPage, GetNovelListResponse.class);
     }

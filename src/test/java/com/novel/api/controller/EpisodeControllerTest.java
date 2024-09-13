@@ -159,7 +159,7 @@ class EpisodeControllerTest {
         var info = TestInfoFixture.get();
 
         //when
-        when(episodeService.getList(eq(info.getNovelId()), any())).thenReturn(mock(PageingResponse.class));
+        when(episodeService.getEpisodeList(eq(info.getNovelId()), any())).thenReturn(mock(PageingResponse.class));
 
         //expected
         mockMvc.perform(get("/api/v1/novels/{novelId}/episodes", info.getNovelId())

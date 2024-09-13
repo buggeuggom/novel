@@ -166,7 +166,7 @@ class EpisodeServiceTest {
         when(episodeRepository.getList(info.getEpisodeId(), search)).thenReturn(episodes);
 
         //then
-        assertDoesNotThrow(() -> episodeService.getList(info.getEpisodeId(), search));
+        assertDoesNotThrow(() -> episodeService.getEpisodeList(info.getEpisodeId(), search));
     }
 
 }

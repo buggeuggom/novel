@@ -12,6 +12,7 @@ import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.repository.episode.EpisodeRepository;
 import com.novel.api.repository.novel.NovelRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,7 +31,9 @@ public class EpisodeService {
         Novel novel = novelRepository.findById(novelId)
                 .orElseThrow(() -> new NovelApplicationException(NOVEL_NOT_FOUND));
 
-        isPermittedUserForNovelOrInvalidPermissionException(user, novel);
+        if (!novel.getUser().equals(user)) {
+            throw new NovelApplicationException(INVALID_PERMISSION);
+        }
 
         var episode = Episode.builder()
                 .title(request.getTitle())
@@ -41,6 +44,7 @@ public class EpisodeService {
         episodeRepository.save(episode);
     }
 
+    @Cacheable(cacheNames = "getEpisode", key = "'episode:episode:'+#episodeId", cacheManager = "boardCacheManager")
     public EpisodeDto get(Long episodeId) {
         Episode episode = episodeRepository.findById(episodeId)
                 .orElseThrow(() -> new NovelApplicationException(EPISODE_NOT_FOUND));
@@ -48,17 +52,12 @@ public class EpisodeService {
         return EpisodeDto.from(episode);
     }
 
-    public PageingResponse<EpisodeListResponse> getList(Long novelId, EpisodeSearch search) {
+    @Cacheable(cacheNames = "getEpisodeList", key = "'episode:novel:'+ #novelId + ':page:' + #search.page + ':size:' + #search.size", cacheManager = "boardCacheManager")
+    public PageingResponse<EpisodeListResponse> getEpisodeList(Long novelId, EpisodeSearch search) {
 
         Page<Episode> list = episodeRepository.getList(novelId, search);
 
         return new PageingResponse<>(list, EpisodeListResponse.class);
-    }
-
-    private static void isPermittedUserForNovelOrInvalidPermissionException(User user, Novel novel) {
-        if (!novel.getUser().equals(user)) {
-            throw new NovelApplicationException(INVALID_PERMISSION);
-        }
     }
 
 }

@@ -9,7 +9,6 @@ import com.novel.api.dto.request.novel.EditNovelRequest;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.NovelFixture;
 import com.novel.api.fixture.TestInfoFixture;
-import com.novel.api.fixture.UserFixture;
 import com.novel.api.repository.UserRepository;
 import com.novel.api.repository.novel.NovelRepository;
 import org.junit.jupiter.api.*;
@@ -151,7 +150,7 @@ class NovelServiceTest {
         when(novelRepository.getList(search)).thenReturn(novelPage);
 
         //then
-        assertDoesNotThrow(() -> novelService.getList(search));
+        assertDoesNotThrow(() -> novelService.getNovelList(search));
     }
 
     /**
