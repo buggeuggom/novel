@@ -31,7 +31,7 @@ public class EpisodeService {
         Novel novel = novelRepository.findById(novelId)
                 .orElseThrow(() -> new NovelApplicationException(NOVEL_NOT_FOUND));
 
-        if (!novel.getUser().equals(user)) {
+        if (!novel.getUser().getId().equals(user.getId())) {
             throw new NovelApplicationException(INVALID_PERMISSION);
         }
 

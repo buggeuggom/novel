@@ -4,6 +4,7 @@ import com.novel.api.domain.novel.Novel;
 import com.novel.api.domain.user.User;
 import com.novel.api.dto.NovelDto;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
+import com.novel.api.dto.request.novel.GetSubscribeNovelListSearch;
 import com.novel.api.dto.request.novel.WriteNovelRequest;
 import com.novel.api.dto.request.novel.EditNovelRequest;
 import com.novel.api.dto.response.PageingResponse;
@@ -57,6 +58,11 @@ public class NovelService {
         return new PageingResponse<>(novelPage, GetNovelListResponse.class);
     }
 
+    public PageingResponse<GetNovelListResponse> getSubscribeList(GetSubscribeNovelListSearch search, User user) {
+        Page<Novel> novelPage = novelRepository.getSubscribeList(search, user);
+        return new PageingResponse<>(novelPage, GetNovelListResponse.class);
+    }
+
     public void edit(Long novelId, EditNovelRequest request, User user) {
 
         Novel novel = getNovelOrNovelNotFoundException(novelId);
@@ -85,10 +91,9 @@ public class NovelService {
     }
 
     private static void isPermittedUserForNovelOrInvalidPermissionException(User user, Novel novel) {
-        if (!novel.getUser().equals(user)) {
+        if (!novel.getUser().getId().equals(user.getId())) {
             throw new NovelApplicationException(INVALID_PERMISSION);
         }
     }
-
 
 }
