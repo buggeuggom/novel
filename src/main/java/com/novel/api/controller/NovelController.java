@@ -3,6 +3,7 @@ package com.novel.api.controller;
 
 import com.novel.api.domain.user.User;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
+import com.novel.api.dto.request.novel.GetSubscribeNovelListSearch;
 import com.novel.api.dto.request.novel.WriteNovelRequest;
 import com.novel.api.dto.request.novel.EditNovelRequest;
 import com.novel.api.dto.response.PageingResponse;
@@ -68,11 +69,17 @@ public class NovelController {
     }
 
     /**
-     * 설명: 특정 소설 리스트 조회
+     * 설명: 소설 리스트 조회
      */
     @GetMapping
-    public PageingResponse<GetNovelListResponse> getList(@ModelAttribute GetNovelListSearch getNovelListSearch) {
-        return novelService.getNovelList(getNovelListSearch);
+    public PageingResponse<GetNovelListResponse> getList(@ModelAttribute GetNovelListSearch search) {
+        return novelService.getNovelList(search);
     }
 
+    @GetMapping("/subscribes")
+    public PageingResponse<GetNovelListResponse> getSubscribeList(@ModelAttribute GetSubscribeNovelListSearch search, Authentication authentication) {
+        User user = ClassUtils.getSafeUserBySafeCast(authentication);
+
+        return novelService.getSubscribeList(search, user);
+    }
 }
