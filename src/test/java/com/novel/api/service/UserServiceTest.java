@@ -1,13 +1,10 @@
 package com.novel.api.service;
 
 import com.novel.api.domain.user.User;
-import com.novel.api.dto.UserDto;
 import com.novel.api.dto.request.UserSignupRequest;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.UserFixture;
 import com.novel.api.repository.UserRepository;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

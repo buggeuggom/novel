@@ -9,7 +9,6 @@ import com.novel.api.dto.request.episode.WriteEpisodeRequest;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.EpisodeFixture;
 import com.novel.api.fixture.NovelFixture;
-import com.novel.api.fixture.TestInfoFixture;
 import com.novel.api.fixture.UserFixture;
 import com.novel.api.repository.episode.EpisodeRepository;
 import com.novel.api.repository.novel.NovelRepository;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 import java.util.List;

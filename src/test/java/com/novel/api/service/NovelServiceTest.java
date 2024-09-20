@@ -11,7 +11,6 @@ import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.dto.response.novel.GetNovelListResponse;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.NovelFixture;
-import com.novel.api.fixture.TestInfoFixture;
 import com.novel.api.fixture.UserFixture;
 import com.novel.api.repository.UserRepository;
 import com.novel.api.repository.novel.NovelRepository;
