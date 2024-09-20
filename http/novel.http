@@ -1,0 +1,41 @@
+### 소설 등록
+
+POST http://localhost:8080/api/v1/novels
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Imh3YW5naW5reXU0MkBnbWFpbC5jb20iLCJpYXQiOjE3MjY0NTYyNjcsImV4cCI6MTcyOTA0ODI2N30.CAUJtI3XaIrMDU-G9tImEmf2s9-1sYUj4Ve7iCJRrRY
+
+{
+  "title": "title 3",
+  "explanation": "explanation 1",
+  "genre": "FANTASY"
+}
+
+### 소설 수정
+PUT http://localhost:8080/api/v1/novels/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Imh3YW5naW5reXU0MkBnbWFpbC5jb20iLCJpYXQiOjE3MjY0NTYyNjcsImV4cCI6MTcyOTA0ODI2N30.CAUJtI3XaIrMDU-G9tImEmf2s9-1sYUj4Ve7iCJRrRY
+
+{
+  "explanation": "test changed2",
+  "genre": "FANTASY",
+  "novelStatus": "UNAPPROVAL"
+}
+
+### 소설 삭제
+DELETE http://localhost:8080/api/v1/novels/1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Imh3YW5naW5reXU0MkBnbWFpbC5jb20iLCJpYXQiOjE3MjY0NTYyNjcsImV4cCI6MTcyOTA0ODI2N30.CAUJtI3XaIrMDU-G9tImEmf2s9-1sYUj4Ve7iCJRrRY
+
+{
+}
+
+### 소설 리스트 조회
+GET http://localhost:8080/api/v1/novels?page=1&size=10
+
+Content-Type: application/json
+
+
+### 소설 단건 조회
+GET http://localhost:8080/api/v1/novels/1
+
+Content-Type: application/json

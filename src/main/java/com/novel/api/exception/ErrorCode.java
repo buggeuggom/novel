@@ -17,14 +17,12 @@ public enum ErrorCode {
 
     //404
     EPISODE_NOT_FOUND(NOT_FOUND, "Episode not founded"),
-    REVIEW_NOT_FOUND(NOT_FOUND, "Review not founded "),
     NOVEL_NOT_FOUND(NOT_FOUND, "Novel not founded"),
     SUBSCRIPTION_NOT_FOUND(NOT_FOUND, "Subscription not founded"),
     USER_NOT_FOUND(NOT_FOUND, "User not founded"),
 
 
     //409
-    ALREADY_WROTE_REVIEW(CONFLICT, "User already wrote review of this novel"),
     ALREADY_SUBSCRIBED_NOVEL(CONFLICT, "User already subscribed novel"),
     DUPLICATED_NOVEL_NAME(CONFLICT, "Duplicated novel name"),
     DUPLICATED_USER(CONFLICT, "Duplicated user"),

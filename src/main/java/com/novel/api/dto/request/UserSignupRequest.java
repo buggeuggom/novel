@@ -2,10 +2,10 @@ package com.novel.api.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
-@NoArgsConstructor
+@Setter
 public class UserSignupRequest {
 
     private String email;

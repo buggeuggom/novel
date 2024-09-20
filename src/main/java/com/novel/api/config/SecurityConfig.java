@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -19,7 +20,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
+
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -41,22 +48,26 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        return http.csrf((auth) -> auth.disable())
+        return http
+                .csrf((auth) -> auth.disable())
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/*/users/*", "/login").permitAll()
+                        .requestMatchers("/api/*/users/*", "/api/*/login").permitAll()
+                        .requestMatchers(GET,"/**").permitAll()
+                        .requestMatchers(GET, "/api/*/novels/subscribes").authenticated()
                         .anyRequest().authenticated())
+
                 .addFilterAt(jsonEmailPasswordLoginFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtFilter(userService, secretKey), JsonEmailPasswordLoginFilter.class)
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(STATELESS))
+
+                .sessionManagement((session) -> session.sessionCreationPolicy(STATELESS))
                 .build();
     }
 
 
     @Bean
-    public JsonEmailPasswordLoginFilter jsonEmailPasswordLoginFilter(){
+    public JsonEmailPasswordLoginFilter jsonEmailPasswordLoginFilter() {
         JsonEmailPasswordLoginFilter filter = new JsonEmailPasswordLoginFilter(objectMapper);
         filter.setAuthenticationManager(authenticationManager());
 
@@ -84,16 +95,12 @@ public class SecurityConfig {
     }
 
     @Bean
-    public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler(){
-        return new LoginSuccessJWTProvideHandler(secretKey, expiredTimeMs);
+    public LoginSuccessJWTProvideHandler loginSuccessJWTProvideHandler() {
+        return new LoginSuccessJWTProvideHandler(secretKey, expiredTimeMs, objectMapper);
     }
 
     @Bean
-    public LoginFailureHandler loginFailureHandler(){
+    public LoginFailureHandler loginFailureHandler() {
         return new LoginFailureHandler(objectMapper);
     }
-
-
-
-
 }

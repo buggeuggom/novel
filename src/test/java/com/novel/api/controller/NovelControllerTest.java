@@ -1,13 +1,12 @@
 package com.novel.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.novel.api.domain.novel.Novel;
 import com.novel.api.dto.NovelDto;
 import com.novel.api.dto.request.novel.WriteNovelRequest;
 import com.novel.api.dto.request.novel.EditNovelRequest;
 import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.fixture.NovelFixture;
-import com.novel.api.fixture.TestInfoFixture;
-import com.novel.api.fixture.UserFixture;
 import com.novel.api.service.NovelService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -57,13 +56,14 @@ class NovelControllerTest {
     @DisplayName("[get][success]: ")
     void get_success() throws Exception {
         //given
-        var info = TestInfoFixture.get();
-        NovelDto novelDto = NovelDto.from(NovelFixture.get(UserFixture.get()));
+        Novel novel = NovelFixture.get();
+        NovelDto novelDto = NovelDto.from(novel);
+
         //when
-        when(novelService.get(info.getNovelId())).thenReturn(novelDto);
+        when(novelService.get(novel.getId())).thenReturn(novelDto);
 
         //expected
-        mockMvc.perform(get("/api/v1/novels/{novelId}", info.getNovelId())
+        mockMvc.perform(get("/api/v1/novels/{novelId}", novel.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                 ).andDo(print())
                 .andExpect(status().isOk())
@@ -74,24 +74,6 @@ class NovelControllerTest {
                 .andExpect(jsonPath("$.authorName").value(novelDto.getUserDto().getName()));
     }
 
-    @Test
-    @WithAnonymousUser
-    @DisplayName("[get][fail]: forbidden <- 로그인 안된 유저")
-    void get_fail_forbidden() throws Exception {
-        //given
-        var info = TestInfoFixture.get();
-
-        //when
-        NovelDto novelDto = NovelDto.from(NovelFixture.get(UserFixture.get()));
-        when(novelService.get(info.getNovelId())).thenReturn(novelDto);
-
-        //expected
-        mockMvc.perform(get("/api/v1/novels/{novelId}", info.getNovelId())
-                        .contentType(MediaType.APPLICATION_JSON)
-                ).andDo(print())
-                .andExpect(status().isForbidden());
-    }
-
     /*
     write test
      */
@@ -100,10 +82,12 @@ class NovelControllerTest {
     @DisplayName("[write][success]: ")
     void write_success() throws Exception {
         //given
+        Novel novel = NovelFixture.get();
+
         WriteNovelRequest request = WriteNovelRequest.builder()
-                .title("title")
-                .explanation("explanation")
-                .genre(FANTASY)
+                .title(novel.getTitle())
+                .explanation(novel.getExplanation())
+                .genre(novel.getGenre())
                 .build();
         String json = objectMapper.writeValueAsString(request);
 
@@ -120,11 +104,14 @@ class NovelControllerTest {
     @DisplayName("[write][fail]: forbidden <- 로그인 안된 유저")
     void write_fail_forbidden() throws Exception {
         //given
-        var request = WriteNovelRequest.builder()
-                .title("title")
-                .explanation("explanation")
-                .genre(FANTASY)
+        Novel novel = NovelFixture.get();
+
+        WriteNovelRequest request = WriteNovelRequest.builder()
+                .title(novel.getTitle())
+                .explanation(novel.getExplanation())
+                .genre(novel.getGenre())
                 .build();
+
         String json = objectMapper.writeValueAsString(request);
 
         //expected
@@ -140,17 +127,17 @@ class NovelControllerTest {
     @DisplayName("[edit][fail]: forbidden <- 로그인 안된 유저")
     void edit_fail_forbidden() throws Exception {
         //given
-        var info = TestInfoFixture.get();
+        Novel novel = NovelFixture.get();
 
         var request = EditNovelRequest.builder()
                 .novelStatus(COMPLETED)
-                .explanation("explanation")
+                .explanation(novel.getExplanation())
                 .genre(FANTASY)
                 .build();
         String json = objectMapper.writeValueAsString(request);
 
         //expected
-        mockMvc.perform(put("/api/v1/novels/{novelId}", info.getNovelId())
+        mockMvc.perform(put("/api/v1/novels/{novelId}", novel.getId())
                         .contentType(APPLICATION_JSON)
                         .content(json))
                 .andDo(print())
@@ -162,10 +149,10 @@ class NovelControllerTest {
     @DisplayName("[delete][fail]: forbidden <- 로그인 안된 유저")
     void delete_fail_forbidden() throws Exception {
         //given
-        var info = TestInfoFixture.get();
+        Novel novel = NovelFixture.get();
 
         //expected
-        mockMvc.perform(delete("/api/v1/novels/{novelId}", info.getNovelId())
+        mockMvc.perform(delete("/api/v1/novels/{novelId}", novel.getId())
                         .contentType(APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isForbidden());
@@ -177,7 +164,7 @@ class NovelControllerTest {
     void getList_success() throws Exception {
 
         //when
-        when(novelService.getList(any())).thenReturn(mock(PageingResponse.class));
+        when(novelService.getNovelList(any())).thenReturn(mock(PageingResponse.class));
 
         //expected
         mockMvc.perform(get("/api/v1/novels")
@@ -186,21 +173,5 @@ class NovelControllerTest {
 
                 ).andDo(print())
                 .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithAnonymousUser
-    @DisplayName("[getList][fail]: forbidden <- 로그인 안된 유저")
-    void getList_fail_forbidden() throws Exception {
-        //when
-        when(novelService.getList(any())).thenReturn(mock(PageingResponse.class));
-
-        //expected
-        mockMvc.perform(get("/api/v1/novels")
-                        .param("page", "1")
-                        .param("size", "10")
-
-                ).andDo(print())
-                .andExpect(status().isForbidden());
     }
 }
