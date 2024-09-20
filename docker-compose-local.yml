@@ -13,7 +13,7 @@ services:
       MYSQL_ROOT_PASSWORD: 1234
       MYSQL_DATABASE: novel
       MYSQL_USER: admin
-      MYSQL_PASSWORD: k77889302!
+      MYSQL_PASSWORD: k77889302
     volumes:
       - ./my.cnf:/etc/mysql/my.cnf
     ports:

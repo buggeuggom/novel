@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  novel-redis:                        # 서비스명
+    container_name: novel-redis       # 컨테이너 명
+    build:
+      dockerfile: Dockerfile
+      context: ./redis
+    image: hwnaginkyu42/novel-redis
+    ports:
+      - "6379:6379"
+
+  novel-app:
+    container_name: novel-app
+    build: .
+    depends_on:
+      - novel-redis
+    image: hwnaginkyu42/novel-app
+    ports:
+      - "80:8080"
+    restart: always
