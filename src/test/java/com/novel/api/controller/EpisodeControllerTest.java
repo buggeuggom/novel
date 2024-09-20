@@ -1,12 +1,14 @@
 package com.novel.api.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.novel.api.domain.episode.Episode;
+import com.novel.api.domain.novel.Novel;
 import com.novel.api.dto.EpisodeDto;
 import com.novel.api.dto.request.episode.WriteEpisodeRequest;
 import com.novel.api.dto.response.PageingResponse;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.EpisodeFixture;
-import com.novel.api.fixture.TestInfoFixture;
+import com.novel.api.fixture.NovelFixture;
 import com.novel.api.service.EpisodeService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -52,12 +54,13 @@ class EpisodeControllerTest {
     @DisplayName("[write][success]: ")
     void write_success() throws Exception {
         //given
-        var info = TestInfoFixture.get();
+        Novel novel = NovelFixture.get();
+
         WriteEpisodeRequest mockRequest = mock(WriteEpisodeRequest.class);
         String json = objectMapper.writeValueAsString(mockRequest);
 
         //expected
-        mockMvc.perform(post("/api/v1/novels/{novelId}/episodes", info.getNovelId())
+        mockMvc.perform(post("/api/v1/novels/{novelId}/episodes", novel.getId())
                         .contentType(APPLICATION_JSON)
                         .content(json))
                 .andDo(print())
@@ -69,12 +72,13 @@ class EpisodeControllerTest {
     @DisplayName("[write][fail]: forbidden")
     void write_fail_forbidden() throws Exception {
         //given
-        var info = TestInfoFixture.get();
+        Novel novel = NovelFixture.get();
+
         WriteEpisodeRequest mockRequest = mock(WriteEpisodeRequest.class);
         String json = objectMapper.writeValueAsString(mockRequest);
 
         //expected
-        mockMvc.perform(post("/api/v1/novels/{novelId}/episodes", info.getNovelId())
+        mockMvc.perform(post("/api/v1/novels/{novelId}/episodes", novel.getId())
                         .contentType(APPLICATION_JSON)
                         .content(json))
                 .andDo(print())
@@ -86,13 +90,14 @@ class EpisodeControllerTest {
     @DisplayName("[write][fail]: NOVEL_NOT_FOUND")
     void write_fail_novel_not_found() throws Exception {
         //given
-        var info = TestInfoFixture.get();
+        Novel novel = NovelFixture.get();
+
         WriteEpisodeRequest mockRequest = mock(WriteEpisodeRequest.class);
         String json = objectMapper.writeValueAsString(mockRequest);
 
-        doThrow(new NovelApplicationException(NOVEL_NOT_FOUND)).when(episodeService).write(eq(info.getNovelId()), any(), any());
+        doThrow(new NovelApplicationException(NOVEL_NOT_FOUND)).when(episodeService).write(eq(novel.getId()), any(), any());
         //expected
-        mockMvc.perform(post("/api/v1/novels/{novelId}/episodes", info.getNovelId())
+        mockMvc.perform(post("/api/v1/novels/{novelId}/episodes", novel.getId())
                         .contentType(APPLICATION_JSON)
                         .content(json))
                 .andDo(print())
@@ -104,13 +109,14 @@ class EpisodeControllerTest {
     @DisplayName("[write][fail]: INVALID_PERMISSION")
     void write_fail_invalid_permission() throws Exception {
         //given
-        var info = TestInfoFixture.get();
+        Novel novel = NovelFixture.get();
+        
         WriteEpisodeRequest mockRequest = mock(WriteEpisodeRequest.class);
         String json = objectMapper.writeValueAsString(mockRequest);
 
-        doThrow(new NovelApplicationException(INVALID_PERMISSION)).when(episodeService).write(eq(info.getNovelId()), any(), any());
+        doThrow(new NovelApplicationException(INVALID_PERMISSION)).when(episodeService).write(eq(novel.getId()), any(), any());
         //expected
-        mockMvc.perform(post("/api/v1/novels/{novelId}/episodes", info.getNovelId())
+        mockMvc.perform(post("/api/v1/novels/{novelId}/episodes", novel.getId())
                         .contentType(APPLICATION_JSON)
                         .content(json))
                 .andDo(print())
@@ -122,13 +128,13 @@ class EpisodeControllerTest {
     @DisplayName("[get][success]: ")
     void get_success() throws Exception {
         //given
-        var info = TestInfoFixture.get();
-
+        Episode episode = EpisodeFixture.get();
+        
         //when
-        when(episodeService.get(info.getEpisodeId())).thenReturn(EpisodeDto.from(EpisodeFixture.get()));
+        when(episodeService.get(episode.getId())).thenReturn(EpisodeDto.from(episode));
 
         //expected
-        mockMvc.perform(get("/api/v1/episodes/{episodeId}", info.getEpisodeId())
+        mockMvc.perform(get("/api/v1/episodes/{episodeId}", episode.getId())
                         .contentType(APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -139,13 +145,13 @@ class EpisodeControllerTest {
     @DisplayName("[get][fail]: EPISODE_NOT_FOUND")
     void get_fail_episode_not_found() throws Exception {
         //given
-        var info = TestInfoFixture.get();
+        Episode episode = EpisodeFixture.get();
 
         //when
-        doThrow(new NovelApplicationException(EPISODE_NOT_FOUND)).when(episodeService).get(eq(info.getEpisodeId()));
+        doThrow(new NovelApplicationException(EPISODE_NOT_FOUND)).when(episodeService).get(eq(episode.getId()));
 
         //expected
-        mockMvc.perform(get("/api/v1/episodes/{episodeId}", info.getEpisodeId())
+        mockMvc.perform(get("/api/v1/episodes/{episodeId}", episode.getId())
                         .contentType(APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().is(EPISODE_NOT_FOUND.getStatus().value()));
@@ -156,13 +162,13 @@ class EpisodeControllerTest {
     @DisplayName("[getList][success]: ")
     void getList_success() throws Exception {
         //given
-        var info = TestInfoFixture.get();
+        Novel novel = NovelFixture.get();
 
         //when
-        when(episodeService.getEpisodeList(eq(info.getNovelId()), any())).thenReturn(mock(PageingResponse.class));
+        when(episodeService.getEpisodeList(eq(novel.getId()), any())).thenReturn(mock(PageingResponse.class));
 
         //expected
-        mockMvc.perform(get("/api/v1/novels/{novelId}/episodes", info.getNovelId())
+        mockMvc.perform(get("/api/v1/novels/{novelId}/episodes", novel.getId())
                         .contentType(APPLICATION_JSON)
                         .param("page", "1")
                         .param("size", "10"))

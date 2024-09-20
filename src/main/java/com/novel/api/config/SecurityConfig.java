@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .formLogin((auth) -> auth.disable())
                 .httpBasic((auth) -> auth.disable())
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/*/users/*", "/login").permitAll()
+                        .requestMatchers("/api/*/users/*", "/api/*/login").permitAll()
                         .requestMatchers(GET,"/**").permitAll()
                         .requestMatchers(GET, "/api/*/novels/subscribes").authenticated()
                         .anyRequest().authenticated())
@@ -61,8 +61,7 @@ public class SecurityConfig {
                 .addFilterAt(jsonEmailPasswordLoginFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtFilter(userService, secretKey), JsonEmailPasswordLoginFilter.class)
 
-                .sessionManagement((session) -> session
-                        .sessionCreationPolicy(STATELESS))
+                .sessionManagement((session) -> session.sessionCreationPolicy(STATELESS))
                 .build();
     }
 

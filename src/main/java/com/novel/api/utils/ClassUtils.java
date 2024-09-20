@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 public class ClassUtils {
 
     public static User getSafeUserBySafeCast(Authentication authentication) {
-        UserDetailsImpl userDetails = ClassUtils.getSafeCastInstance(authentication.getPrincipal(), UserDetailsImpl.class);
+        UserDetailsImpl userDetails = getSafeCastInstance(authentication.getPrincipal(), UserDetailsImpl.class);
 
         return userDetails == null ? null : userDetails.getUser();
     }
