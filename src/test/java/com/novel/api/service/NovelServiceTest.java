@@ -6,9 +6,12 @@ import com.novel.api.domain.user.User;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
 import com.novel.api.dto.request.novel.WriteNovelRequest;
 import com.novel.api.dto.request.novel.EditNovelRequest;
+import com.novel.api.dto.response.PageingResponse;
+import com.novel.api.dto.response.novel.GetNovelListResponse;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.NovelFixture;
 import com.novel.api.fixture.TestInfoFixture;
+import com.novel.api.fixture.UserFixture;
 import com.novel.api.repository.UserRepository;
 import com.novel.api.repository.novel.NovelRepository;
 import org.junit.jupiter.api.*;
@@ -79,7 +82,6 @@ class NovelServiceTest {
         //when
         when(novelRepository.findByTitle(fixture.getTitle()))
                 .thenReturn(Optional.of(mock(Novel.class)));
-        when(novelRepository.save(any())).thenReturn(mock(Novel.class));
 
         //then
         var exception = assertThrows(NovelApplicationException.class, () -> novelService.write(request, mock(User.class)));
@@ -122,7 +124,7 @@ class NovelServiceTest {
      * getList
      */
     @Test
-    @DisplayName("[getList][success]: ")
+    @DisplayName("[getList][success]:")
     void getList_success() {
         //given
 
@@ -131,6 +133,8 @@ class NovelServiceTest {
         var search = GetNovelListSearch.builder()
                 .title("test")
                 .author(mockUser.getName())
+                .size(10)
+                .page(1)
                 .build();
 
         List<Novel> novels = IntStream.rangeClosed(0, 9)
@@ -143,14 +147,15 @@ class NovelServiceTest {
                         .build())
                 .collect(Collectors.toList());
 
-
         PageImpl<Novel> novelPage = new PageImpl<>(novels, search.getPageable(), novels.size());
 
         //when
         when(novelRepository.getList(search)).thenReturn(novelPage);
 
         //then
-        assertDoesNotThrow(() -> novelService.getNovelList(search));
+        PageingResponse<GetNovelListResponse> result = assertDoesNotThrow(() -> novelService.getNovelList(search));
+        assertEquals(result.getTotalCount(), novels.size());
+        assertEquals(result.getItems().getFirst().getTitle(), novels.getFirst().getTitle());
     }
 
     /**
@@ -161,45 +166,42 @@ class NovelServiceTest {
     @DisplayName("[edit][성공]:")
     void edit_success() {
         //given
-        var fixture = TestInfoFixture.get();
-
-        Novel mockNovel = mock(Novel.class);
-        User mockUser = mock(User.class);
+        User userFixture = UserFixture.get();
+        Novel novelFixture = NovelFixture.get(userFixture);
 
         var request = EditNovelRequest.builder()
-                .explanation(fixture.getExplanation())
-                .genre(fixture.getGenre())
+                .explanation("changed")
+                .genre(Genre.ROMANCE)
                 .build();
 
         //when
-        when(novelRepository.findById(fixture.getNovelId()))
-                .thenReturn(Optional.of(mockNovel));
-        when(mockNovel.getUser()).thenReturn(mockUser);
+        when(novelRepository.findById(novelFixture.getId()))
+                .thenReturn(Optional.of(novelFixture));
 
         //then
-        assertDoesNotThrow(() -> novelService.edit(fixture.getNovelId(), request, mockUser));
+        assertDoesNotThrow(() -> novelService.edit(novelFixture.getId(), request, userFixture));
     }
 
     @Test
     @DisplayName("[edit][fail]: NOVEL_NOT_FOUND")
     void edit_fail_novel_not_found() {
         //given
-        var fixture = TestInfoFixture.get();
+        User userFixture = UserFixture.get();
+        Novel novelFixture = NovelFixture.get(userFixture);
 
         var request = EditNovelRequest.builder()
-                .explanation(fixture.getExplanation())
-                .genre(fixture.getGenre())
+                .explanation("changed")
+                .genre(Genre.ROMANCE)
                 .build();
 
-        User mockUser = mock(User.class);
         //when
-        when(novelRepository.findById(fixture.getNovelId()))
+        when(novelRepository.findById(novelFixture.getId()))
                 .thenReturn(Optional.empty());
 
 
         //then
         var exception = assertThrows(NovelApplicationException.class,
-                () -> novelService.edit(fixture.getNovelId(), request, mockUser));
+                () -> novelService.edit(novelFixture.getId(), request, userFixture));
 
         assertEquals(exception.getErrorCode(), NOVEL_NOT_FOUND);
     }
@@ -208,23 +210,22 @@ class NovelServiceTest {
     @DisplayName("[edit][fail]: INVALID_PERMISSION")
     void edit_fail_invalid_permission() {
         //given
-        Novel mockNovel = mock(Novel.class);
-        User mockUser = mock(User.class);
-        var fixture = TestInfoFixture.get();
+        User userFixture = UserFixture.get();
+        Novel novelFixture = NovelFixture.get(userFixture);
 
         var request = EditNovelRequest.builder()
-                .explanation(fixture.getExplanation())
-                .genre(fixture.getGenre())
+                .explanation("changed")
+                .genre(Genre.ROMANCE)
                 .build();
 
         //when
-        when(novelRepository.findById(fixture.getNovelId()))
-                .thenReturn(Optional.of(mockNovel));
-        when(mockNovel.getUser()).thenReturn(mock(User.class));
+        when(novelRepository.findById(novelFixture.getId()))
+                .thenReturn(Optional.of(novelFixture));
+
 
         //then
         var exception = assertThrows(NovelApplicationException.class,
-                () -> novelService.edit(fixture.getNovelId(), request, mockUser));
+                () -> novelService.edit(novelFixture.getId(), request, mock(User.class)));
 
         assertEquals(exception.getErrorCode(), INVALID_PERMISSION);
     }
@@ -237,59 +238,49 @@ class NovelServiceTest {
     @DisplayName("[delete][성공]:")
     void delete_success() {
         //given
-        Novel mockNovel = mock(Novel.class);
-        User mockUser = mock(User.class);
-
-        var fixture = TestInfoFixture.get();
+        User userFixture = UserFixture.get();
+        Novel novelFixture = NovelFixture.get(userFixture);
 
         //when
-        when(novelRepository.findById(fixture.getNovelId()))
-                .thenReturn(Optional.of(mockNovel));
-        when(mockNovel.getUser()).thenReturn(mockUser);
+        when(novelRepository.findById(novelFixture.getId()))
+                .thenReturn(Optional.of(novelFixture));
 
         //then
-        assertDoesNotThrow(() -> novelService.delete(fixture.getNovelId(), mockUser));
+        assertDoesNotThrow(() -> novelService.delete(novelFixture.getId(), userFixture));
     }
 
     @Test
     @DisplayName("[delete][fail]: NOVEL_NOT_FOUND")
     void delete_fail_novel_not_found() {
         //given
-        var fixture = TestInfoFixture.get();
-
-        User mockUser = mock(User.class);
+        User userFixture = UserFixture.get();
+        Novel novelFixture = NovelFixture.get(userFixture);
 
         //when
-        when(novelRepository.findById(fixture.getNovelId()))
+        when(novelRepository.findById(novelFixture.getId()))
                 .thenReturn(Optional.empty());
 
         //then
         var exception = assertThrows(NovelApplicationException.class,
-                () -> novelService.delete(fixture.getNovelId(), mockUser));
+                () -> novelService.delete(novelFixture.getId(), userFixture));
+
         assertEquals(exception.getErrorCode(), NOVEL_NOT_FOUND);
     }
-
     @Test
     @DisplayName("[delete][fail]: INVALID_PERMISSION")
     void delete_fail_invalid_permission() {
         //given
-        Novel mockNovel = mock(Novel.class);
-        User mockUser = mock(User.class);
-        var fixture = TestInfoFixture.get();
-
-        var request = EditNovelRequest.builder()
-                .explanation(fixture.getExplanation())
-                .genre(fixture.getGenre())
-                .build();
+        User userFixture = UserFixture.get();
+        Novel novelFixture = NovelFixture.get(userFixture);
 
         //when
-        when(novelRepository.findById(fixture.getNovelId()))
-                .thenReturn(Optional.of(mockNovel));
-        when(mockNovel.getUser()).thenReturn(mock(User.class));
+        when(novelRepository.findById(novelFixture.getId()))
+                .thenReturn(Optional.of(novelFixture));
 
         //then
         var exception = assertThrows(NovelApplicationException.class,
-                () -> novelService.delete(fixture.getNovelId(), mockUser));
+                () -> novelService.delete(novelFixture.getId(), mock(User.class)));
+
         assertEquals(exception.getErrorCode(), INVALID_PERMISSION);
     }
 }
