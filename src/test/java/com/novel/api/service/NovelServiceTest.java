@@ -3,6 +3,7 @@ package com.novel.api.service;
 import com.novel.api.domain.novel.Genre;
 import com.novel.api.domain.novel.Novel;
 import com.novel.api.domain.user.User;
+import com.novel.api.dto.NovelDto;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
 import com.novel.api.dto.request.novel.WriteNovelRequest;
 import com.novel.api.dto.request.novel.EditNovelRequest;
@@ -51,40 +52,41 @@ class NovelServiceTest {
     @DisplayName("[write][성공]:")
     void write_success() {
         //given
-        var fixture = TestInfoFixture.get();
+        User userFixture = UserFixture.get();
+        Novel novelFixture = NovelFixture.get(userFixture);
 
         var request = WriteNovelRequest.builder()
-                .title(fixture.getTitle())
-                .explanation(fixture.getExplanation())
-                .genre(fixture.getGenre())
+                .title(novelFixture.getTitle())
+                .explanation(novelFixture.getExplanation())
+                .genre(novelFixture.getGenre())
                 .build();
 
         //when
-        when(novelRepository.findByTitle(fixture.getTitle())).thenReturn(Optional.empty());
-        when(novelRepository.save(any())).thenReturn(mock(Novel.class));
+        when(novelRepository.findByTitle(request.getTitle())).thenReturn(Optional.empty());
+        when(novelRepository.save(any())).thenReturn(novelFixture);
 
         //then
-        assertDoesNotThrow(() -> novelService.write(request, mock(User.class)));
+        assertDoesNotThrow(() -> novelService.write(request, userFixture));
     }
 
     @Test
     @DisplayName("[write][fail]: DUPLICATED_NOVEL_NAME")
     void write_fail_duplicated_novel_name() {
         //given
-        var fixture = TestInfoFixture.get();
+        User userFixture = UserFixture.get();
+        Novel novelFixture = NovelFixture.get(userFixture);
 
-        WriteNovelRequest request = WriteNovelRequest.builder()
-                .title(fixture.getTitle())
-                .explanation(fixture.getExplanation())
-                .genre(fixture.getGenre())
+        var request = WriteNovelRequest.builder()
+                .title(novelFixture.getTitle())
+                .explanation(novelFixture.getExplanation())
+                .genre(novelFixture.getGenre())
                 .build();
 
         //when
-        when(novelRepository.findByTitle(fixture.getTitle()))
-                .thenReturn(Optional.of(mock(Novel.class)));
+        when(novelRepository.findByTitle(request.getTitle())).thenReturn(Optional.of(novelFixture));
 
         //then
-        var exception = assertThrows(NovelApplicationException.class, () -> novelService.write(request, mock(User.class)));
+        var exception = assertThrows(NovelApplicationException.class, () -> novelService.write(request, userFixture));
         assertEquals(exception.getErrorCode(), DUPLICATED_NOVEL_NAME);
     }
 
@@ -95,28 +97,32 @@ class NovelServiceTest {
     @DisplayName("[get][성공]:")
     void get_success() {
         //given
-        var fixture = TestInfoFixture.get();
+        User userFixture = UserFixture.get();
+        Novel novelFixture = NovelFixture.get(userFixture);
 
         //when
-        when(novelRepository.findById(fixture.getNovelId()))
-                .thenReturn(Optional.of(NovelFixture.get(mock(User.class))));
+        when(novelRepository.findById(novelFixture.getId()))
+                .thenReturn(Optional.of(novelFixture));
 
         //then
-        assertDoesNotThrow(() -> novelService.get(fixture.getNovelId()));
+        NovelDto result = assertDoesNotThrow(() -> novelService.get(novelFixture.getId()));
+        assertEquals(novelFixture.getTitle(), result.getTitle());
+        assertEquals(novelFixture.getNovelStatus(), result.getNovelStatus());
     }
 
     @Test
     @DisplayName("[get][fail]: NOVEL_NOT_FOUND")
     void get_fail_novel_not_found() {
         //given
-        var fixture = TestInfoFixture.get();
+        User userFixture = UserFixture.get();
+        Novel novelFixture = NovelFixture.get(userFixture);
 
         //when
-        when(novelRepository.findById(fixture.getNovelId()))
+        when(novelRepository.findById(novelFixture.getId()))
                 .thenReturn(Optional.empty());
 
         //then
-        var exception = assertThrows(NovelApplicationException.class, () -> novelService.get(fixture.getNovelId()));
+        var exception = assertThrows(NovelApplicationException.class, () -> novelService.get(novelFixture.getId()));
         assertEquals(exception.getErrorCode(), NOVEL_NOT_FOUND);
     }
 
@@ -127,7 +133,6 @@ class NovelServiceTest {
     @DisplayName("[getList][success]:")
     void getList_success() {
         //given
-
         User mockUser = mock(User.class);
 
         var search = GetNovelListSearch.builder()
