@@ -73,3 +73,6 @@ Temporary Items
 
 ###qurydsl
 src/main/generated/
+
+###RDS, Redis로이해
+#src/main/resources/application.yml
