@@ -51,7 +51,14 @@ ORDER BY n.id;
 -- 에피소드 순서가 소설별로 리셋되도록 소설마다 에피소드 순서를 다시 초기화
 SET @episode_order = 0;
 
-
+insert into subscription(created_at, modified_at, novel_id, user_id)
+select now(),
+       now(),
+       n.id,
+       u.id
+from user  u
+join (select id from novel order by rand() limit 30) as n  on 1 = 1
+where u.id in (select  id from user);
 
 
 
