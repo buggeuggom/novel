@@ -4,6 +4,7 @@ import com.novel.api.domain.novel.Novel;
 import com.novel.api.domain.user.User;
 import com.novel.api.dto.NovelDto;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
+import com.novel.api.dto.request.novel.GetSubscribeNovelListSearch;
 import com.novel.api.dto.request.novel.WriteNovelRequest;
 import com.novel.api.dto.request.novel.EditNovelRequest;
 import com.novel.api.dto.response.PageingResponse;
@@ -11,6 +12,7 @@ import com.novel.api.dto.response.novel.GetNovelListResponse;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.repository.novel.NovelRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,8 +53,13 @@ public class NovelService {
     }
 
     @Transactional(readOnly = true)
-    public PageingResponse<GetNovelListResponse> getList(GetNovelListSearch search) {
+    public PageingResponse<GetNovelListResponse> getNovelList(GetNovelListSearch search) {
         Page<Novel> novelPage = novelRepository.getList(search);
+        return new PageingResponse<>(novelPage, GetNovelListResponse.class);
+    }
+
+    public PageingResponse<GetNovelListResponse> getSubscribeList(GetSubscribeNovelListSearch search, User user) {
+        Page<Novel> novelPage = novelRepository.getSubscribeList(search, user);
         return new PageingResponse<>(novelPage, GetNovelListResponse.class);
     }
 
@@ -84,10 +91,9 @@ public class NovelService {
     }
 
     private static void isPermittedUserForNovelOrInvalidPermissionException(User user, Novel novel) {
-        if (!novel.getUser().equals(user)) {
+        if (!novel.getUser().getId().equals(user.getId())) {
             throw new NovelApplicationException(INVALID_PERMISSION);
         }
     }
-
 
 }

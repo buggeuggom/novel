@@ -2,7 +2,10 @@ package com.novel.api.repository.novel;
 
 import com.novel.api.domain.novel.Genre;
 import com.novel.api.domain.novel.Novel;
+import com.novel.api.domain.subscription.QSubscription;
+import com.novel.api.domain.user.User;
 import com.novel.api.dto.request.novel.GetNovelListSearch;
+import com.novel.api.dto.request.novel.GetSubscribeNovelListSearch;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +28,11 @@ public class NovelRepositoryImpl implements NovelRepositoryCustom{
 
         long totalCount = jpaQueryFactory.select(novel.count())
                 .from(novel)
+                .where(titleStartWith(search.getTitle()), novelAuthorStartWith(search.getAuthor()), isNovelGenre(search.getGenre()))
                 .fetchFirst();
 
         List<Novel> novels = jpaQueryFactory.selectFrom(novel)
-                .leftJoin(subscription.novel, novel)
-                .where(titleStartWith(search.getTitle()), novelAuthorStartWith(search.getAuthor()), isNovelGenre(search.getGenre()), isSubscribe(search.getSubscribe()))
+                .where(titleStartWith(search.getTitle()), novelAuthorStartWith(search.getAuthor()), isNovelGenre(search.getGenre()))
                 .limit(search.getSize())
                 .offset(search.getOffset())
                 .orderBy(novel.id.desc())
@@ -38,10 +41,20 @@ public class NovelRepositoryImpl implements NovelRepositoryCustom{
         return new PageImpl<>(novels, search.getPageable(), totalCount);
     }
 
-    private static BooleanExpression isSubscribe(boolean subscribe) {
-        if (subscribe) subscription.id.isNotNull();
+    @Override
+    public Page<Novel> getSubscribeList(GetSubscribeNovelListSearch search, User user) {
+        long totalCount = jpaQueryFactory.select(novel.count())
+                .from(subscription)
+                .where(subscription.user.eq(user))
+                .fetchFirst();
 
-        return null;
+        List<Novel> novels = jpaQueryFactory.select(novel).from(subscription)
+                .where(subscription.user.eq(user))
+                .limit(search.getSize())
+                .offset(search.getOffset())
+                .orderBy(novel.id.desc())
+                .fetch();
+        return new PageImpl<>(novels, search.getPageable(), totalCount);
     }
 
     private static BooleanExpression novelAuthorStartWith(String author) {

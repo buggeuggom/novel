@@ -14,7 +14,6 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
-@ToString(callSuper = true)
 @Table
 @Entity
 @NoArgsConstructor(access = PROTECTED)

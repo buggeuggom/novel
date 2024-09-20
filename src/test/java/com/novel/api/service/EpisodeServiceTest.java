@@ -8,7 +8,8 @@ import com.novel.api.dto.request.episode.EpisodeSearch;
 import com.novel.api.dto.request.episode.WriteEpisodeRequest;
 import com.novel.api.exception.NovelApplicationException;
 import com.novel.api.fixture.EpisodeFixture;
-import com.novel.api.fixture.TestInfoFixture;
+import com.novel.api.fixture.NovelFixture;
+import com.novel.api.fixture.UserFixture;
 import com.novel.api.repository.episode.EpisodeRepository;
 import com.novel.api.repository.novel.NovelRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -51,38 +52,32 @@ class EpisodeServiceTest {
     @DisplayName("[write][성공]:")
     void write_success() {
         //given
-        var fixture = TestInfoFixture.get();
-
-        Novel mockNovel = mock(Novel.class);
-        User mockUser = mock(User.class);
+        User user = UserFixture.get();
+        Novel novel = NovelFixture.get();
+        Episode episode = EpisodeFixture.get();
 
         //when
-        when(novelRepository.findById(fixture.getNovelId())).thenReturn(Optional.of(mockNovel));
-        when(mockNovel.getUser()).thenReturn(mockUser);
-        when(novelRepository.save(any())).thenReturn(mock(Episode.class));
+        when(novelRepository.findById(novel.getId())).thenReturn(Optional.of(novel));
+        when(novelRepository.save(any())).thenReturn(episode);
 
         //then
         assertDoesNotThrow(() -> episodeService
-                .write(fixture.getNovelId(), mock(WriteEpisodeRequest.class), mockUser));
+                .write(novel.getId(), mock(WriteEpisodeRequest.class), user));
     }
 
     @Test
     @DisplayName("[write][fail]: NOVEL_NOT_FOUND")
     void write_fail_novel_not_found() {
         //given
-        var fixture = TestInfoFixture.get();
-
-        Novel mockNovel = mock(Novel.class);
-        User mockUser = mock(User.class);
+        User user = UserFixture.get();
+        Novel novel = NovelFixture.get();
 
         //when
-        when(novelRepository.findById(fixture.getNovelId())).thenReturn(Optional.empty());
-        when(mockNovel.getUser()).thenReturn(mockUser);
-        when(novelRepository.save(any())).thenReturn(mock(Episode.class));
+        when(novelRepository.findById(novel.getId())).thenReturn(Optional.empty());
 
         //then
         var e = assertThrows(NovelApplicationException.class, () -> episodeService
-                .write(fixture.getNovelId(), mock(WriteEpisodeRequest.class), mockUser));
+                .write(novel.getId(), mock(WriteEpisodeRequest.class), user));
         assertEquals(e.getErrorCode(), NOVEL_NOT_FOUND);
     }
 
@@ -90,19 +85,18 @@ class EpisodeServiceTest {
     @DisplayName("[write][fail]: INVALID_PERMISSION")
     void write_fail_invalid_permission() {
         //given
-        var fixture = TestInfoFixture.get();
-
-        Novel mockNovel = mock(Novel.class);
-        User mockUser = mock(User.class);
+        User user = UserFixture.get();
+        Novel novel = NovelFixture.get();
+        Episode episode = EpisodeFixture.get();
 
         //when
-        when(novelRepository.findById(fixture.getNovelId())).thenReturn(Optional.of(mockNovel));
-        when(mockNovel.getUser()).thenReturn(mock(User.class));
-        when(novelRepository.save(any())).thenReturn(mock(Episode.class));
+        when(novelRepository.findById(novel.getId())).thenReturn(Optional.of(novel));
+        when(novelRepository.save(any())).thenReturn(episode);
+        ;
 
         //then
         var e = assertThrows(NovelApplicationException.class, () -> episodeService
-                .write(fixture.getNovelId(), mock(WriteEpisodeRequest.class), mockUser));
+                .write(novel.getId(), mock(WriteEpisodeRequest.class), mock(User.class)));
         assertEquals(e.getErrorCode(), INVALID_PERMISSION);
     }
 
@@ -113,14 +107,13 @@ class EpisodeServiceTest {
     @DisplayName("[get][success]:")
     void get_success() {
         //given
-        var fixture = TestInfoFixture.get();
         Episode episode = EpisodeFixture.get();
 
         //when
-        when(episodeRepository.findById(fixture.getEpisodeId())).thenReturn(Optional.of(episode));
+        when(episodeRepository.findById(episode.getId())).thenReturn(Optional.of(episode));
 
         //then
-        EpisodeDto episodeDto = assertDoesNotThrow(() -> episodeService.get(fixture.getEpisodeId()));
+        EpisodeDto episodeDto = assertDoesNotThrow(() -> episodeService.get(episode.getId()));
 
         assertEquals(episodeDto.getId(), episode.getId());
         assertEquals(episodeDto.getTitle(), episode.getTitle());
@@ -131,13 +124,13 @@ class EpisodeServiceTest {
     @DisplayName("[get][fail]: EPISODE_NOT_FOUND")
     void get_fail_episode_not_found() {
         //given
-        var fixture = TestInfoFixture.get();
+        Episode episode = EpisodeFixture.get();
 
         //when
-        when(episodeRepository.findById(fixture.getEpisodeId())).thenReturn(Optional.empty());
+        when(episodeRepository.findById(episode.getId())).thenReturn(Optional.empty());
 
         //then
-        var e = assertThrows(NovelApplicationException.class, () -> episodeService.get(fixture.getEpisodeId()));
+        var e = assertThrows(NovelApplicationException.class, () -> episodeService.get(episode.getId()));
         assertEquals(e.getErrorCode(), EPISODE_NOT_FOUND);
     }
 
@@ -149,24 +142,24 @@ class EpisodeServiceTest {
     @DisplayName("[getList][success]:")
     void getList_success() {
         //given
-        var info = TestInfoFixture.get();
+        var episode = EpisodeFixture.get();
         var search = EpisodeSearch.builder().build();
 
         List<Episode> collect = IntStream.rangeClosed(0, 9)
                 .mapToObj(i -> Episode.builder()
                         .id((long) i)
-                        .title(info.getTitle() + i)
-                        .detail(info.getEpisodeDetail() + i)
+                        .title(episode.getTitle() + i)
+                        .detail(episode.getDetail() + i)
                         .build())
                 .collect(Collectors.toList());
 
         PageImpl<Episode> episodes = new PageImpl<>(collect, search.getPageable(), collect.size());
 
         //when
-        when(episodeRepository.getList(info.getEpisodeId(), search)).thenReturn(episodes);
+        when(episodeRepository.getList(episode.getId(), search)).thenReturn(episodes);
 
         //then
-        assertDoesNotThrow(() -> episodeService.getList(info.getEpisodeId(), search));
+        assertDoesNotThrow(() -> episodeService.getEpisodeList(episode.getId(), search));
     }
 
 }
