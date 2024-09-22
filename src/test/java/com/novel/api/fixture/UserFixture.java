@@ -12,7 +12,6 @@ public class UserFixture {
                 .name("testName")
                 .email("test@email.com")
                 .password("testPassword")
-                .userRole(UserRole.READER)
                 .build();
     }
 
@@ -22,7 +21,6 @@ public class UserFixture {
                 .name(name)
                 .email("test@email.com")
                 .password(password)
-                .userRole(UserRole.READER)
                 .build();
     }
 
@@ -31,7 +29,6 @@ public class UserFixture {
                 .name("testName")
                 .email("test@email.com")
                 .password(passwordEncoder.encode("testPassword"))
-                .userRole(UserRole.READER)
                 .build();
     }
 }

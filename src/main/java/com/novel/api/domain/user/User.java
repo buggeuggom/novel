@@ -24,15 +24,12 @@ public class User  extends AuditingFields {
     private String email;
     private String name;
     private String password;
-    @Enumerated(STRING)
-    private UserRole userRole;
 
     @Builder
-    private User(Long id, String name, String email, String password, UserRole userRole) {
+    private User(Long id, String name, String email, String password) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
-        this.userRole = userRole;
     }
 }

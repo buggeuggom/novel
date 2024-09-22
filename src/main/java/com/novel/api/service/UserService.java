@@ -13,7 +13,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static com.novel.api.domain.user.UserRole.READER;
 import static com.novel.api.exception.ErrorCode.*;
 
 @Service
@@ -33,7 +32,6 @@ public class UserService  implements UserDetailsService {
                 .email(request.getEmail())
                 .name(request.getName())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .userRole(READER)
                 .build();
 
         return UserDto.from(userRepository.save(user));

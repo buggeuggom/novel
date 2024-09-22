@@ -1,6 +1,7 @@
 package com.novel.api.dto.request.novel;
 
 import com.novel.api.domain.novel.Genre;
+import jakarta.validation.constraints.Min;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,7 +22,9 @@ public class GetNovelListSearch {
     private String author;
     private Genre genre;
 
+    @Min(value = 1, message = "Write page. 1 ~")
     private Integer page;
+    @Min(value = 10, message = "Write size. 1 ~")
     private Integer size;
 
 

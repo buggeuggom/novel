@@ -16,8 +16,10 @@ public class GetSubscribeNovelListSearch {
     private static final int MAX_PAGE = 999;
     private static final int MAX_SIZE = 2000;
 
-    private Integer page;
-    private Integer size;
+    @Builder.Default
+    private Integer page = 1;
+    @Builder.Default
+    private Integer size = 10;
 
     public void setPage(Integer page) {
         this.page = page <= 0 ? 1 : min(page, MAX_PAGE);

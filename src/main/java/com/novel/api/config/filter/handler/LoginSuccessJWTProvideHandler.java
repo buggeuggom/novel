@@ -36,7 +36,7 @@ public class LoginSuccessJWTProvideHandler extends SimpleUrlAuthenticationSucces
 
         String token = JwtUtils.generateAccessToken(email, secretKey, expiredTimeMs);
 
-        log.info( "로그인 성공. JWT 발급. email: {}" ,email);
+        log.info("로그인 성공. JWT 발급. email: {}" ,email);
 
         LoginResponse loginResponse = LoginResponse.builder()
                 .token("Bearer " + token)
