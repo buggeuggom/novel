@@ -27,7 +27,7 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         log.info("[인증오류] 아이디 혹은 비밀번호가 올바르지 않습니다.");
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
+        var errorResponse = ErrorResponse.builder()
                 .resultCode(INVALID_EMAIL_OR_PASSWORD.name())
                 .message("아이디 혹은 비밀번호가 올바르지 않습니다.")
                 .build();

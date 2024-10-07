@@ -82,8 +82,8 @@ public class SecurityConfig {
         JsonEmailPasswordLoginFilter filter = new JsonEmailPasswordLoginFilter(objectMapper);
         filter.setAuthenticationManager(authenticationManager());
 
-        filter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler());
-        filter.setAuthenticationFailureHandler(loginFailureHandler());
+        filter.setAuthenticationSuccessHandler(loginSuccessJWTProvideHandler()); //로그인 성공시
+        filter.setAuthenticationFailureHandler(loginFailureHandler()); //로그인 실패시
 
         return filter;
     }

@@ -21,8 +21,6 @@ public class UserDetailsImpl implements UserDetails {
 
         Collection<GrantedAuthority> collection = new ArrayList<>();
 
-        collection.add((GrantedAuthority) () -> String.valueOf(user.getUserRole()));
-
         return collection;
     }
 
